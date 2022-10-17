@@ -1,8 +1,20 @@
+#ifndef SIGNATURES_HEADER_FILE
+#define SIGNATURES_HEADER_FILE S1GNA1RE
+
 #include <stdio.h>
 #include <inttypes.h>
 
+/**
+ * Container to store file parameters
+ * ASCII_signature - 0xFFFE or 0xFEFF character to define little- or big- endian byte order
+ * root_offset     - offset to root element
+ * first_seq       - sequence that increase, when we open working file
+ * second_seq      - sequence that increase, when we close working file
+ * cur_id          - sequence to manage auto-incremental id
+ * reserved[16]    - reserved empty space
+ */
 struct tree_subheader {
-    char ASCII_signature[8];
+    uint64_t ASCII_signature;
     uint64_t root_offset;
     uint64_t first_seq;
     uint64_t second_seq;
@@ -10,45 +22,54 @@ struct tree_subheader {
     uint64_t reserved[16];
 };
 
-struct pattern {
+/**
+ * Container to store single key
+ */
+struct key {
     uint32_t size;
-    char type[4];
-    char *key;
+    uint32_t type;
+    uint8_t *key;
 };
 
-
+/**
+ * File-header that stores meta-data of file
+ * id_sequence - array to map id of vertices on offsets
+ */
 struct tree_header {
     struct tree_subheader subheader;
-    struct pattern *patterns;
-    uint64_t *offset;
+    struct key *pattern;
+    uint64_t *id_sequence;
 };
 
-/*
- * Юнионы чтобы в зависимости от типа тапла
- * там лежало либо одно, либо второе
- * но места всегда занимает 16 байт
+/**
+ * Header for each tuple with data
+ * (in case when we store string in tuple we should use different variables for header)
  */
-struct tuple_header {
-    union {
-        struct {
-            uint64_t parent;
-            uint64_t alloc;
-        } node_header;
-
-        struct {
-            uint64_t prev;
-            uint64_t next;
-        } string_header;
-
-    } inner;
+union tuple_header {
+    struct {
+        uint64_t parent;
+        uint64_t alloc;
+    };
+    struct {
+        uint64_t prev;
+        uint64_t next;
+    };
 };
 
+/**
+ * Basic unit of data
+ */
 struct tuple {
-    struct tuple_header header;
+    union tuple_header header;
     int64_t *data;
 };
 
+/**
+ * Structure of whole file
+ */
 struct document_tree {
     struct tree_header header;
-    struct tuple* tuples;
+    struct tuple *tuples;
 };
+
+#endif
