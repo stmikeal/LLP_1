@@ -52,8 +52,3 @@ struct document_tree {
     struct tree_header header;
     struct tuple* tuples;
 };
-
-int main() {
-    printf("Hello, World!\n");
-    return 0;
-}
