@@ -3,7 +3,8 @@
 #include "ui/interactive.h"
 
 int main(int argc, char** argv) {
-    int flag = 0;
+
+    /*int flag = 0;
     char* filename;
     if (argc > 3){
         printf("Too many args!");
@@ -23,7 +24,7 @@ int main(int argc, char** argv) {
     }
     if (flag == 'i'){
         interactive_mode(filename);
-    }
+    }*/
     return 0;
 }
 

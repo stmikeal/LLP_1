@@ -19,26 +19,31 @@ struct tree_subheader {
     uint64_t first_seq;
     uint64_t second_seq;
     uint64_t cur_id;
+    uint64_t pattern_size;
     uint64_t reserved[16];
 };
 
 /**
  * Container to store single key
  */
-#pragma pack(4)
-struct key {
+#pragma pack(push, 4)
+struct key_header {
     uint32_t size;
     uint32_t type;
-    uint16_t *key;
 };
+struct key {
+    struct key_header *header;
+    char *key_value;
+};
+#pragma pack(pop)
 
 /**
  * File-header that stores meta-data of file
  * id_sequence - array to map id of vertices on offsets
  */
 struct tree_header {
-    struct tree_subheader subheader;
-    struct key *pattern;
+    struct tree_subheader *subheader;
+    struct key **pattern;
     uint64_t *id_sequence;
 };
 
@@ -62,7 +67,7 @@ union tuple_header {
  */
 struct tuple {
     union tuple_header header;
-    int64_t *data;
+    uint64_t *data;
 };
 
 /**
