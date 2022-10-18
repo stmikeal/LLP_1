@@ -1,5 +1,4 @@
-#ifndef SIGNATURES_HEADER_FILE
-#define SIGNATURES_HEADER_FILE S1GNA1RE
+#pragma once
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -25,10 +24,11 @@ struct tree_subheader {
 /**
  * Container to store single key
  */
+#pragma pack(4)
 struct key {
     uint32_t size;
     uint32_t type;
-    uint8_t *key;
+    uint16_t *key;
 };
 
 /**
@@ -71,5 +71,3 @@ struct document_tree {
     struct tree_header header;
     struct tuple *tuples;
 };
-
-#endif
