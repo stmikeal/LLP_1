@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SIGNATURE_H
+#define SIGNATURE_H
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -71,3 +72,5 @@ struct document_tree {
     struct tree_header header;
     struct tuple *tuples;
 };
+
+#endif
