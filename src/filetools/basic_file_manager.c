@@ -25,20 +25,20 @@ enum file_write_status write_to_file(void *buffer, FILE *file) {
     return code;
 }
 
-static enum file_open_status open_file(char *filename, FILE *file, char *open_descriptor){
-    file = fopen(filename, open_descriptor);
+enum file_open_status open_file(char *filename, FILE **file, char *open_descriptor){
+    *file = fopen(filename, open_descriptor);
     int code = OPEN_OK;
-    if (file==NULL){
+    if (*file==NULL){
         code = OPEN_FAILED;
     }
     return code;
 }
 
-enum file_open_status open_exist_file(char *filename, FILE *file){
+enum file_open_status open_exist_file(char *filename, FILE **file){
     return open_file(filename, file, "r+");
 }
 
-enum file_open_status open_new_file(char *filename, FILE *file){
+enum file_open_status open_new_file(char *filename, FILE **file){
     return open_file(filename, file, "w+");
 }
 

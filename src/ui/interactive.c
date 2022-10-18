@@ -5,7 +5,7 @@ void print_help();
 
 void interactive_mode(char *filename) {
     FILE *f = NULL;
-    if (open_exist_file(filename, f) == OPEN_FAILED) {
+    if (open_exist_file(filename, &f) == OPEN_FAILED) {
         printf("File doesn't exist, should we create it? (Y/n): ");
         char str[1];
         int res = scanf("%s", str);
@@ -14,9 +14,8 @@ void interactive_mode(char *filename) {
             printf("Incorrect input (Y/n): ");
             res = scanf("%s", str);
         }
-        open_new_file(filename, f);
+        open_new_file(filename, &f);
     }
-
 
     printf("File opened successfully!\n");
     printf("Type 'help' for available commands info.\n");

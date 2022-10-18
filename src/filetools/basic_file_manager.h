@@ -6,8 +6,8 @@
 
 enum file_read_status read_from_file(void *buffer, FILE *file);
 enum file_write_status write_to_file(void *buffer, FILE *file);
-enum file_open_status open_exist_file(char *filename, FILE *file);
-enum file_open_status open_new_file(char *filename, FILE *file);
+enum file_open_status open_exist_file(char *filename, FILE **file);
+enum file_open_status open_new_file(char *filename, FILE **file);
 void close_file(FILE *file);
 
 enum file_read_status {
