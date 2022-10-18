@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include "interface/signatures.h"
+#include "ui/interactive.h"
 
-int main() {
-    struct tree_subheader tree = {.ASCII_signature=12, .cur_id=32};
-    printf("%" PRIu64 "\n", tree.ASCII_signature);
+int main(int argc, char** argv) {
+    interactive_mode(argv[1]);
     return 0;
 }
 
