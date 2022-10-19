@@ -21,7 +21,6 @@ struct tree_subheader {
     uint64_t second_seq;
     uint64_t cur_id;
     uint64_t pattern_size;
-    uint64_t reserved[RESERVED_CELLS];
 };
 
 /**

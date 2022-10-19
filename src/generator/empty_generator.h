@@ -6,6 +6,6 @@
 #include "../interface/configuration.h"
 #include "../filetools/big_data_tools.h"
 
-void generate_empty_tree_header(char **pattern, size_t pattern_size, struct tree_header *header);
+void generate_empty_tree_header(char **pattern, uint32_t *types,size_t pattern_size, size_t *key_sizes, struct tree_header *header);
 
 #endif

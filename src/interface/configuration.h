@@ -6,6 +6,5 @@
 #define OFFSET_VALUE_SIZE 8
 #define NULL_VALUE 0
 #define BIG_ENDIAN_SIGNATURE 0xFFFE
-#define RESERVED_CELLS 16
 
 #endif
