@@ -1,6 +1,6 @@
 #include "big_data_tools.h"
 
-static size_t get_real_tuple_size(uint64_t pattern_size) {
+size_t get_real_tuple_size(uint64_t pattern_size) {
     return pattern_size * SINGLE_TUPLE_VALUE_SIZE < MINIMAL_TUPLE_SIZE
            ? MINIMAL_TUPLE_SIZE
            : SINGLE_TUPLE_VALUE_SIZE;
@@ -48,7 +48,7 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, f
     return code;
 }
 
-static enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
+enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
     union tuple_header *header = (union tuple_header *) malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file);
     if (header->alloc) {
@@ -73,7 +73,7 @@ static enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, 
     return code;
 }
 
-static enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
+enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
     union tuple_header *header = (union tuple_header *) malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file);
     struct tuple *temp_tuple = (struct tuple *) malloc(sizeof(struct tuple));
@@ -87,4 +87,11 @@ static enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file,
     *tuple = temp_tuple;
 
     return code;
+}
+
+enum file_write_status init_empty_file(FILE *file, char **pattern, size_t pattern_size){
+    fseek(file, 0, SEEK_SET);
+    struct tree_header *header = (struct tree_header *) malloc(sizeof(struct tree_header));
+    generate_empty_tree_header(pattern, pattern_size, header);
+    return WRITE_INVALID;
 }
