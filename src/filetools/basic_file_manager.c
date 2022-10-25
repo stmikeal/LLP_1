@@ -22,7 +22,7 @@ enum file_write_status write_to_file(void *buffer, FILE *file) {
     return code;
 }
 
-enum file_open_status open_file(char *filename, FILE **file, char *open_descriptor){
+static enum file_open_status open_file(char *filename, FILE **file, char *open_descriptor){
     *file = fopen(filename, open_descriptor);
     enum file_open_status code = OPEN_OK;
     if (*file==NULL){
