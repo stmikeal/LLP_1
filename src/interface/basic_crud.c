@@ -11,10 +11,11 @@ enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap
     return (enum crud_operation_status) write_tuple(file, tuple_to_swap);
 }
 
-enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple_to_swap, size_t full_tuple_size){
+enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size){
     fseek(file, 0, SEEK_END);
     int fd = fileno(file);
-    return ftruncate(fd, ftell(file) + full_tuple_size);
+    ftruncate(fd, ftell(file) + full_tuple_size);
+    return (enum crud_operation_status) write_tuple(file, tuple);
 }
 
 
