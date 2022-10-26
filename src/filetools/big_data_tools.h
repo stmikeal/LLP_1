@@ -7,6 +7,7 @@
 #include "../generator/empty_generator.h"
 #include "basic_file_manager.h"
 
+size_t get_real_id_array_size(uint64_t pattern_size, uint64_t cur_id);
 /**
  * Получение реального размера кортежа
  * @param pattern_size размер массива шаблона
@@ -20,7 +21,7 @@ size_t get_real_tuple_size(uint64_t pattern_size);
  * @param tuple кортеж
  * @return статус записи
  */
-enum file_write_status write_tuple(FILE *file, struct tuple *tuple);
+enum file_write_status write_tuple(FILE *file, struct tuple *tuple, size_t tuple_size);
 
 /**
  * Открытие файла или его создание в случае его отсутствия
@@ -75,6 +76,7 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct 
  * @param fpos контейнер для позиции окончания чтения файла
  * @return статус чтения
  */
-enum file_read_status read_tree_header(struct tree_header *header, FILE *file, fpos_t *fpos);
+enum file_read_status read_tree_header(struct tree_header *header, FILE *file, size_t *fpos);
+void print_tree_header_from_file(FILE *file);
 
 #endif

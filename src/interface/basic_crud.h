@@ -2,6 +2,7 @@
 #define BASIC_CRUD_H
 #include "../filetools/big_data_tools.h"
 #include <unistd.h>
+#include <string.h>
 
 /**
  * Удаляет последний кортеж их файла
@@ -18,7 +19,7 @@ enum crud_operation_status delete_last_tuple(FILE *file, size_t full_tuple_size)
  * @param pos позиция вставки
  * @return статус операции
  */
-enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap, uint64_t pos);
+enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap, uint64_t pos, size_t tuple_size);
 
 /**
  * Вставляет в конец файла новый кортеж
@@ -27,8 +28,8 @@ enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap
  * @param full_tuple_size размер одного кортежа вместе с заголовком
  * @return статус операции
  */
-enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size);
-
+enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, size_t *pos);
+void get_types(FILE *file, uint32_t **types, size_t *size);
 /**
  * Статус операции
  */
