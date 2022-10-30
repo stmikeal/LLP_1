@@ -28,7 +28,8 @@ enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap
  * @param full_tuple_size размер одного кортежа вместе с заголовком
  * @return статус операции
  */
-enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, size_t *pos);
+enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t *str_pos);
+enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos);
 void get_types(FILE *file, uint32_t **types, size_t *size);
 /**
  * Статус операции

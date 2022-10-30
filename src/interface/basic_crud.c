@@ -11,23 +11,24 @@ enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap
     return (enum crud_operation_status) write_tuple(file, tuple_to_swap, tuple_size);
 }
 
-enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, size_t *pos){
+enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos){
     fseek(file, 0, SEEK_END);
+    *tuple_pos = ftell(file);
     int fd = fileno(file);
-    //*pos = (size_t) ftell(file);
     ftruncate(fd, ftell(file) + full_tuple_size);
     return (enum crud_operation_status) write_tuple(file, tuple, full_tuple_size - sizeof(union tuple_header));
 }
 
 
 
-enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size){
+enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t *str_pos){
     size_t len = strlen(string);
     size_t count = len / tuple_size + (len % tuple_size ? 1 : 0) - 1;
     struct tuple *temp_tuple = malloc(sizeof(struct tuple));
     uint64_t *temp_tuple_content = (uint64_t *) string;
     size_t pos = (size_t) ftell(file);
-    size_t fake_pos = ftell(file);
+    *str_pos = ftell(file);
+    uint64_t fake_pos;
     fseek(file, 0, SEEK_END);
     for(size_t iter = 0; count > iter; iter ++) {
         if (count-1 == iter){
@@ -43,7 +44,7 @@ enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t 
         temp_tuple->data = temp_tuple_content;
         insert_new_tuple(file, temp_tuple, tuple_size + sizeof(union tuple_header), &fake_pos);
     }
-    return 1;
+    return 0;
 }
 
 void get_types(FILE *file, uint32_t **types, size_t *size){
