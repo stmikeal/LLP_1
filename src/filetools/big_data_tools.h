@@ -67,7 +67,7 @@ enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct
  * @param tree_header заголовок
  * @return статус чтения
  */
-enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header);
+enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size);
 
 /**
  * Прочитать заголовок файла

@@ -216,7 +216,7 @@ void print_tree_header_from_file(FILE *file) {
 
         for(size_t i = 0; i < header->subheader->cur_id; i++){
             fseek(file, header->id_sequence[i], SEEK_SET);
-            read_basic_tuple(&cur_tuple, file, header);
+            read_basic_tuple(&cur_tuple, file, header->subheader->pattern_size);
             printf("--- TUPLE %3zu ---\n", i);
             for(size_t iter = 0; iter < size; iter++){
                 if (header->pattern[iter]->header->type == STRING_TYPE){
