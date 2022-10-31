@@ -33,12 +33,14 @@ enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id)
     get_types(file, &types, &size);
     fseek(file, offset, SEEK_SET);
     read_basic_tuple(&cur_tuple, file, (uint64_t) size);
+    *fields = malloc(sizeof(uint64_t) * size);
     for(size_t iter = 0; iter < size; iter++){
         if (types[iter] == STRING_TYPE){
             char *s;
-            read_string_from_tuple(file, &s, size, cur_tuple->data[iter]);;
+            read_string_from_tuple(file, &s, size, cur_tuple->data[iter]);
+            (*fields)[iter] = (uint64_t) s;
         } else {
-
+            (*fields)[iter] = cur_tuple->data[iter];
         }
     }
 }
