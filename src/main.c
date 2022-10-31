@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv) {
     FILE *file;
-    open_file_anyway(&file, "simple.txt");
+    open_empty_file("simple.txt", &file);
     char *par1 = "Code";
     char *par2 = "Name";
     char **pattern = malloc(sizeof(char *) * 2);

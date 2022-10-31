@@ -115,6 +115,7 @@ static enum file_write_status write_id_sequence(FILE *file, uint64_t *id_sequenc
 }
 
 enum file_write_status write_tree_header(FILE *file, struct tree_header *header){
+    fseek(file, 0, SEEK_SET);
     size_t pattern_size = header->subheader->pattern_size;
     enum file_write_status code = write_tree_subheader(file, header->subheader);
     code |= write_pattern(file, header->pattern, pattern_size);

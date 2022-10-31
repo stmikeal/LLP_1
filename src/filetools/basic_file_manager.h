@@ -40,6 +40,8 @@ enum file_open_status open_new_file(char *filename, FILE **file);
  * Закрытие файла
  * @param file файловый поток
  */
+
+enum file_open_status open_empty_file(char *filename, FILE **file);
 void close_file(FILE *file);
 
 /**
