@@ -23,7 +23,7 @@ enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t pare
     free(link);
     return status;
 }
-/*
+
 enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id) {
     uint64_t offset;
     id_to_offset(file, id, &offset);
@@ -31,18 +31,14 @@ enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id)
     uint32_t *types;
     size_t size;
     get_types(file, &types, &size);
+    fseek(file, offset, SEEK_SET);
     read_basic_tuple(&cur_tuple, file, (uint64_t) size);
-    fseek(file, header->id_sequence[i], SEEK_SET);
-    read_basic_tuple(&cur_tuple, file, header);
-    printf("--- TUPLE %3zu ---\n", i);
     for(size_t iter = 0; iter < size; iter++){
-        if (header->pattern[iter]->header->type == STRING_TYPE){
+        if (types[iter] == STRING_TYPE){
             char *s;
-            read_string_from_tuple(file, &s, header, cur_tuple->data[iter]);
-            printf("%-20s %s\n", header->pattern[iter]->key_value, s);
+            read_string_from_tuple(file, &s, size, cur_tuple->data[iter]);;
         } else {
-            printf("%-20s %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
+
         }
     }
 }
- */

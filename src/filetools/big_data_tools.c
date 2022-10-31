@@ -80,15 +80,15 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_
     return code;
 }
 
-enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
+enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size) {
     union tuple_header *header = malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file, sizeof(union tuple_header));
     struct tuple *temp_tuple = (struct tuple *) malloc(sizeof(struct tuple));
     temp_tuple->header = *header;
     free(header);
 
-    uint64_t *data = (uint64_t *) malloc(get_real_tuple_size(tree_header->subheader->pattern_size));
-    code |= read_from_file(data, file, get_real_tuple_size(tree_header->subheader->pattern_size));
+    uint64_t *data = (uint64_t *) malloc(get_real_tuple_size(pattern_size));
+    code |= read_from_file(data, file, get_real_tuple_size(pattern_size));
     temp_tuple->data = data;
 
     *tuple = temp_tuple;
@@ -109,14 +109,14 @@ static size_t how_long_string_is(FILE *file, uint64_t offset){
     return len;
 }
 
-enum file_read_status read_string_from_tuple(FILE *file, char **string, struct tree_header *tree_header, uint64_t offset){
+enum file_read_status read_string_from_tuple(FILE *file, char **string, uint64_t pattern_size, uint64_t offset){
     size_t str_len = how_long_string_is(file, offset);
-    size_t rts = get_real_tuple_size(tree_header->subheader->pattern_size);
+    size_t rts = get_real_tuple_size(pattern_size);
     *string = malloc(str_len * rts);
     struct tuple *temp_tuple;
     for(size_t iter = 0; iter < str_len; iter++) {
         fseek(file, offset, SEEK_SET);
-        read_string_tuple(&temp_tuple, file, tree_header);
+        read_string_tuple(&temp_tuple, file, pattern_size);
         offset = temp_tuple->header.next;
         strncpy((*string) + rts * iter, (char *) temp_tuple->data, rts);
     }
@@ -221,7 +221,7 @@ void print_tree_header_from_file(FILE *file) {
             for(size_t iter = 0; iter < size; iter++){
                 if (header->pattern[iter]->header->type == STRING_TYPE){
                     char *s;
-                    read_string_from_tuple(file, &s, header, cur_tuple->data[iter]);
+                    read_string_from_tuple(file, &s, header->subheader->pattern_size, cur_tuple->data[iter]);
                     printf("%-20s %s\n", header->pattern[iter]->key_value, s);
                 } else {
                     printf("%-20s %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
