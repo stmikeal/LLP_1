@@ -23,6 +23,15 @@ struct tree_subheader {
     uint64_t pattern_size;
 };
 
+enum tree_subheader_parameter {
+    PAR_ASCII_SIGNATURE = 0,
+    PAR_ROOT_OFFSET,
+    PAR_FIRST_SEQ,
+    PAR_SECOND_SEQ,
+    PAR_CURRENT_ID,
+    PAR_PATTERN_SIZE
+};
+
 /**
  * Контейнер для ключа шаблона
  */

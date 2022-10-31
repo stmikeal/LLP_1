@@ -21,10 +21,15 @@ int main(int argc, char** argv) {
     init_empty_file(file, pattern, types, pattern_size, sizes);
 
     uint64_t* fields = malloc(sizeof(uint64_t) + sizeof(char*));
+    fields[0] = 1024;
+    char* str = "billy";
+    fields[1] = str;
+    add_tuple(file, fields, 1298);
     fields[0] = 123;
-    char* str = "Bob";
+    str = "Bob";
     fields[1] = str;
     add_tuple(file, fields, 3);
+
     print_tree_header_from_file(file);
 
     
