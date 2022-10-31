@@ -15,11 +15,11 @@ enum crud_operation_status delete_last_tuple(FILE *file, size_t full_tuple_size)
 /**
  * Вставляет на позицию кортеж
  * @param file файл
- * @param tuple_to_swap кортеж
- * @param pos позиция вставки
+ * @param pos_from откуда скопировать
+ * @param pos_to куда скопировать
  * @return статус операции
  */
-enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap, uint64_t pos, size_t tuple_size);
+enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t pos_to, size_t tuple_size);
 
 /**
  * Вставляет в конец файла новый кортеж
