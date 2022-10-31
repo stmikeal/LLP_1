@@ -22,11 +22,11 @@ int main(int argc, char** argv) {
 
     uint64_t* fields = malloc(sizeof(uint64_t) + sizeof(char*));
     fields[0] = 1024;
-    char* str = "Billy";
+    char* str = "Рома";
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 1298);
     fields[0] = 123;
-    str = "Bob";
+    str = "Чепух";
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 3);
 

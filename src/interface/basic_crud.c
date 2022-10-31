@@ -25,7 +25,7 @@ enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t 
     size_t len = strlen(string);
     size_t count = len / tuple_size + (len % tuple_size ? 1 : 0);
     struct tuple *temp_tuple = malloc(sizeof(struct tuple));
-    uint64_t *temp_tuple_content = (uint64_t *) string;
+    char *temp_tuple_content = string;
     size_t pos = (size_t) ftell(file);
     uint64_t fake_pos;
     fseek(file, 0, SEEK_END);
@@ -41,7 +41,7 @@ enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t 
         } else {
             temp_tuple->header.prev = pos + (tuple_size + sizeof(union tuple_header)) * (iter - 1);
         }
-        temp_tuple->data = temp_tuple_content + tuple_size * iter;
+        temp_tuple->data = (uint64_t *) (temp_tuple_content + tuple_size * iter);
         insert_new_tuple(file, temp_tuple, tuple_size + sizeof(union tuple_header), &fake_pos);
     }
     return 0;
