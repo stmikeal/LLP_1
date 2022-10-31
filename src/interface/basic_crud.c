@@ -7,12 +7,25 @@ enum crud_operation_status delete_last_tuple(FILE *file, size_t full_tuple_size)
 }
 
 enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t pos_to, size_t tuple_size) {
-    fseek(file, pos_from, SEEK_SET);
-    void* buffer = malloc(tuple_size);
+    if (pos_from != pos_to) {
+        fseek(file, pos_from, SEEK_SET);
+        void *buffer = malloc(tuple_size);
 
-    read_from_file(buffer, file, tuple_size);
-    fseek(file, pos_to, SEEK_SET);
-    write_to_file(buffer, file, tuple_size);
+        read_from_file(buffer, file, tuple_size);
+        fseek(file, pos_to, SEEK_SET);
+        write_to_file(buffer, file, tuple_size);
+
+        fseek(file, 0, SEEK_SET);
+        struct tree_header *header = malloc(sizeof(struct tree_header));
+        size_t pos;
+        read_tree_header(header, file, &pos);
+        uint64_t id;
+        offset_to_id(file, &id, pos_from);
+        header->id_sequence[id] = pos_to;
+        write_tree_header(file, header);
+        free(header);
+
+    }
     ftruncate(fileno(file), pos_from);
     return CRUD_OK;
 }
@@ -131,6 +144,22 @@ enum crud_operation_status id_to_offset(FILE *file, uint64_t id, uint64_t* offse
     read_tree_header(header, file, &pos);
     *offset = header->id_sequence[id];
     return CRUD_OK;
+}
+
+enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offset) {
+    fseek(file, 0, SEEK_SET);
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t pos;
+    read_tree_header(header, file, &pos);
+    for (size_t iter = 0; iter < header->subheader->cur_id; iter++){
+        if (header->id_sequence[iter] == offset){
+            *id = iter;
+            free(header);
+            return CRUD_OK;
+        }
+    }
+    free(header);
+    return CRUD_INVALID;
 }
 
 
