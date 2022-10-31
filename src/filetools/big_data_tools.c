@@ -81,7 +81,7 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct 
 }
 
 enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
-    union tuple_header *header = (union tuple_header *) malloc(sizeof(union tuple_header));
+    union tuple_header *header = malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file, sizeof(union tuple_header));
     struct tuple *temp_tuple = (struct tuple *) malloc(sizeof(struct tuple));
     temp_tuple->header = *header;
@@ -94,6 +94,33 @@ enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, struct
     *tuple = temp_tuple;
 
     return code;
+}
+
+static size_t how_long_string_is(FILE *file, uint64_t offset){
+    fseek(file, offset, SEEK_SET);
+    size_t len = 1;
+    union tuple_header *temp_header = malloc(sizeof(union tuple_header));
+    read_from_file(temp_header, file, sizeof(union tuple_header));
+    while(temp_header->next){
+        fseek(file, temp_header->next, SEEK_SET);
+        read_from_file(temp_header, file, sizeof(union tuple_header));
+        len++;
+    }
+    return len;
+}
+
+enum file_read_status read_string_from_tuple(FILE *file, char **string, struct tree_header *tree_header, uint64_t offset){
+    size_t str_len = how_long_string_is(file, offset);
+    size_t rts = get_real_tuple_size(tree_header->subheader->pattern_size);
+    *string = malloc(str_len * rts);
+    struct tuple *temp_tuple;
+    for(size_t iter = 0; iter < str_len; iter++) {
+        fseek(file, offset, SEEK_SET);
+        read_string_tuple(&temp_tuple, file, tree_header);
+        offset = temp_tuple->header.next;
+        strncpy((*string) + rts * iter, (char *) temp_tuple->data, rts);
+    }
+    return 0;
 }
 
 static enum file_write_status write_tree_subheader(FILE *file, struct tree_subheader *subheader){
@@ -180,35 +207,26 @@ void print_tree_header_from_file(FILE *file) {
 
     void print_tuple_array_from_file(FILE *file){
         struct tree_header *header = malloc(sizeof(struct tree_header));
-        size_t *pos = malloc(sizeof (size_t));
-        read_tree_header(header, file, pos);
-        uint32_t** fields = malloc(sizeof(uint32_t*));
-        size_t* size = malloc(sizeof(size_t));
-        get_types(file, fields, size);
+        size_t pos;
+        read_tree_header(header, file, &pos);
+        uint32_t* fields;
+        size_t size;
+        get_types(file, &fields, &size);
         struct tuple* cur_tuple = malloc(sizeof(struct tuple));
 
         for(size_t i = 0; i < header->subheader->cur_id; i++){
-            fseek(file, (long) (header->id_sequence[i]), SEEK_SET);
+            fseek(file, header->id_sequence[i], SEEK_SET);
             read_basic_tuple(&cur_tuple, file, header);
 
-            for(size_t iter = 0; iter < *size; iter++){
-                printf("%s: %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
+            for(size_t iter = 0; iter < size; iter++){
+                if (header->pattern[iter]->header->type == STRING_TYPE){
+                    char *s;
+                    read_string_from_tuple(file, &s, header, cur_tuple->data[iter]);
+                    printf("%s: %s\n", header->pattern[iter]->key_value, s);
+                } else {
+                    printf("%s: %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
+                }
             }
 
         }
-//
-//        for(size_t iter = 0; iter < header->subheader->pattern_size; iter++){
-//            printf("Key %3d [Type %3d]: %s\n",
-//                   header->pattern[iter]->header->size, header->pattern[iter]->header->type, header->pattern[iter]->key_value);
-//        }
-//        printf("--- ID ARRAY ---\n");
-//
-//        size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
-//        for(size_t iter = 0; iter < (real_id_array_size / PRINT_ID_ARRAY_LEN); iter++){
-//            for(size_t inner_iter = 0; inner_iter < PRINT_ID_ARRAY_LEN; inner_iter++){
-//                //printf("%ld", iter * PRINT_ID_ARRAY_LEN + inner_iter);
-//                printf("%16lx ", header->id_sequence[iter * PRINT_ID_ARRAY_LEN + inner_iter]);
-//            }
-//            printf("\n");
-//        }
     }
