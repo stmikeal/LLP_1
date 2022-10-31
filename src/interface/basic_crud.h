@@ -31,6 +31,7 @@ enum crud_operation_status swap_tuple_to(FILE *file, struct tuple *tuple_to_swap
 enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t *str_pos);
 enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos);
 void get_types(FILE *file, uint32_t **types, size_t *size);
+enum crud_operation_status change_parameter(FILE *file, enum tree_subheader_parameter parameter, uint64_t value);
 /**
  * Статус операции
  */

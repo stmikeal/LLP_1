@@ -61,7 +61,7 @@ void get_types(FILE *file, uint32_t **types, size_t *size){
     free(header);
 }
 
-enum crud_operation_status change_parameter(FILE *file, enum tree_subheader_parameter parameter, uint64_t *value){
+enum crud_operation_status change_parameter(FILE *file, enum tree_subheader_parameter parameter, uint64_t value){
     return 0;
 }
 
