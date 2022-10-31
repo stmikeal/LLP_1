@@ -78,5 +78,6 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct 
  */
 enum file_read_status read_tree_header(struct tree_header *header, FILE *file, size_t *fpos);
 void print_tree_header_from_file(FILE *file);
+void print_tuple_array_from_file(FILE *file);
 
 #endif

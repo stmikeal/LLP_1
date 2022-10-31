@@ -1,4 +1,5 @@
 #include "big_data_tools.h"
+#include "../interface/basic_crud.h"
 
 size_t get_real_tuple_size(uint64_t pattern_size) {
     return pattern_size * SINGLE_TUPLE_VALUE_SIZE < MINIMAL_TUPLE_SIZE
@@ -148,9 +149,9 @@ enum file_write_status write_tuple(FILE *file, struct tuple *tuple, size_t tuple
     return code;
 }
 
-void print_tree_header_from_file(FILE *file){
-    struct tree_header *header = malloc(sizeof(header));
-    size_t *pos = malloc(sizeof (size_t));
+void print_tree_header_from_file(FILE *file) {
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t *pos = malloc(sizeof(size_t));
     read_tree_header(header, file, pos);
     printf("--- SUBHEADER ---\n");
     printf("%-20s%ld\n", "ASCII Signature: ", header->subheader->ASCII_signature);
@@ -160,18 +161,54 @@ void print_tree_header_from_file(FILE *file){
     printf("%-20s%ld\n", "Current ID: ", header->subheader->cur_id);
     printf("%-20s%ld\n", "Pattern Size: ", header->subheader->pattern_size);
     printf("--- PATTERN ---\n");
-    for(size_t iter = 0; iter < header->subheader->pattern_size; iter++){
+    for (size_t iter = 0; iter < header->subheader->pattern_size; iter++) {
         printf("Key %3d [Type %3d]: %s\n",
-               header->pattern[iter]->header->size, header->pattern[iter]->header->type, header->pattern[iter]->key_value);
+               header->pattern[iter]->header->size, header->pattern[iter]->header->type,
+               header->pattern[iter]->key_value);
     }
     printf("--- ID ARRAY ---\n");
 
     size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
-    for(size_t iter = 0; iter < (real_id_array_size / PRINT_ID_ARRAY_LEN); iter++){
-        for(size_t inner_iter = 0; inner_iter < PRINT_ID_ARRAY_LEN; inner_iter++){
+    for (size_t iter = 0; iter < (real_id_array_size / PRINT_ID_ARRAY_LEN); iter++) {
+        for (size_t inner_iter = 0; inner_iter < PRINT_ID_ARRAY_LEN; inner_iter++) {
             //printf("%ld", iter * PRINT_ID_ARRAY_LEN + inner_iter);
             printf("%16lx ", header->id_sequence[iter * PRINT_ID_ARRAY_LEN + inner_iter]);
         }
         printf("\n");
     }
 }
+
+    void print_tuple_array_from_file(FILE *file){
+        struct tree_header *header = malloc(sizeof(struct tree_header));
+        size_t *pos = malloc(sizeof (size_t));
+        read_tree_header(header, file, pos);
+        uint32_t** fields = malloc(sizeof(uint32_t*));
+        size_t* size = malloc(sizeof(size_t));
+        get_types(file, fields, size);
+        struct tuple* cur_tuple = malloc(sizeof(struct tuple));
+
+        for(size_t i = 0; i < header->subheader->cur_id; i++){
+            fseek(file, (long) (header->id_sequence[i]), SEEK_SET);
+            read_basic_tuple(&cur_tuple, file, header);
+
+            for(size_t iter = 0; iter < *size; iter++){
+                printf("%s: %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
+            }
+
+        }
+//
+//        for(size_t iter = 0; iter < header->subheader->pattern_size; iter++){
+//            printf("Key %3d [Type %3d]: %s\n",
+//                   header->pattern[iter]->header->size, header->pattern[iter]->header->type, header->pattern[iter]->key_value);
+//        }
+//        printf("--- ID ARRAY ---\n");
+//
+//        size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
+//        for(size_t iter = 0; iter < (real_id_array_size / PRINT_ID_ARRAY_LEN); iter++){
+//            for(size_t inner_iter = 0; inner_iter < PRINT_ID_ARRAY_LEN; inner_iter++){
+//                //printf("%ld", iter * PRINT_ID_ARRAY_LEN + inner_iter);
+//                printf("%16lx ", header->id_sequence[iter * PRINT_ID_ARRAY_LEN + inner_iter]);
+//            }
+//            printf("\n");
+//        }
+    }

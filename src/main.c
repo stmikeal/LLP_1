@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
     add_tuple(file, fields, 3);
 
     print_tree_header_from_file(file);
+    print_tuple_array_from_file(file);
 
     
     /*int flag = 0;
