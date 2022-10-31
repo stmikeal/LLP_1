@@ -10,7 +10,7 @@ enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t pare
     new_tuple->data = malloc(size);
     uint64_t *link = malloc(sizeof(uint64_t));
     for(size_t iter = 0; iter < size; iter++){
-        if (types[iter]){
+        if (types[iter] == 3){
             insert_string_tuple(file, (char *) fields[iter], get_real_tuple_size(size), link);
             new_tuple->data[iter] = *link;
         } else {

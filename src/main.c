@@ -1,5 +1,7 @@
 #include "ui/interactive.h"
 #include "interface/basic_crud.h"
+#include "interface/crud_interface.h"
+
 
 int main(int argc, char** argv) {
     FILE *file;
@@ -17,7 +19,15 @@ int main(int argc, char** argv) {
     types[0] = 1;
     types[1] = 3;
     init_empty_file(file, pattern, types, pattern_size, sizes);
+
+    uint64_t* fields = malloc(sizeof(uint64_t) + sizeof(char*));
+    fields[0] = 123;
+    char* str = "Bob";
+    fields[1] = str;
+    add_tuple(file, fields, 3);
     print_tree_header_from_file(file);
+
+    
     /*int flag = 0;
     char* filename;
     if (argc > 3){

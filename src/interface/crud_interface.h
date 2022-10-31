@@ -2,5 +2,5 @@
 #define CRUD_INTERFACE_H
 #include "basic_crud.h"
 
-
+enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t parent_id);
 #endif
