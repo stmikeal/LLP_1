@@ -29,13 +29,12 @@ int main(int argc, char** argv) {
     str = "Чепух";
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 3);
-    remove_tuple(file, 0);
+    remove_tuple(file, 1);
 
     print_tree_header_from_file(file);
     print_tuple_array_from_file(file);
     uint64_t *fieldss;
     get_tuple(file, &fieldss, 0);
-    printf("%s\n", (char *)fieldss[1]);
 
     
     /*int flag = 0;
