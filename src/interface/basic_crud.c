@@ -7,12 +7,13 @@ enum crud_operation_status delete_last_tuple(FILE *file, size_t full_tuple_size)
 }
 
 enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t pos_to, size_t tuple_size) {
-    fseek(file, (long) pos_from, SEEK_SET);
-    void* buffer;
-    read_from_file(buffer, file, tuple_size);
+    fseek(file, pos_from, SEEK_SET);
+    void* buffer = malloc(tuple_size);
 
-    fseek(file, (long) pos_to, SEEK_SET);
+    read_from_file(buffer, file, tuple_size);
+    fseek(file, pos_to, SEEK_SET);
     write_to_file(buffer, file, tuple_size);
+    ftruncate(fileno(file), pos_from);
     return CRUD_OK;
 }
 

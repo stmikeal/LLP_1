@@ -63,6 +63,5 @@ enum crud_operation_status remove_tuple(FILE *file, uint64_t id){
     if (pos_from != pos_to) {
         swap_tuple_to(file, pos_from, pos_to, get_real_tuple_size(size) + sizeof(union tuple_header));
     }
-    ftruncate(fileno(file), (long) pos_from);
     return CRUD_OK;
 }
