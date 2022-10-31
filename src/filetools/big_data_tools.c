@@ -55,7 +55,7 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, s
     return code;
 }
 
-enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct tree_header *tree_header) {
+enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size) {
     union tuple_header *header = (union tuple_header *) malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file, sizeof(union tuple_header));
     if (header->alloc) {
@@ -71,8 +71,8 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, struct 
     write_to_file(header, file, sizeof(union tuple_header));
 
 
-    uint64_t *data = (uint64_t *) malloc(get_real_tuple_size(tree_header->subheader->pattern_size));
-    code |= read_from_file(data, file, get_real_tuple_size(tree_header->subheader->pattern_size));
+    uint64_t *data = (uint64_t *) malloc(get_real_tuple_size(pattern_size));
+    code |= read_from_file(data, file, get_real_tuple_size(pattern_size));
     temp_tuple->data = data;
 
     *tuple = temp_tuple;
