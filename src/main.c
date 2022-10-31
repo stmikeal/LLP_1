@@ -35,8 +35,6 @@ int main(int argc, char** argv) {
     print_tuple_array_from_file(file);
     uint64_t *fieldss;
     get_tuple(file, &fieldss, 0);
-    printf("%s\n", (char *)fieldss[1]);
-
     
     /*int flag = 0;
     char* filename;

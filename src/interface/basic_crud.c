@@ -17,8 +17,7 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
     return CRUD_OK;
 }
 
-enum crud_operation_status
-insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos) {
+enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos) {
     fseek(file, 0, SEEK_END);
     *tuple_pos = ftell(file);
     int fd = fileno(file);
