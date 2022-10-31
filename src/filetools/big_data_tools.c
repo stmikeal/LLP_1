@@ -217,14 +217,14 @@ void print_tree_header_from_file(FILE *file) {
         for(size_t i = 0; i < header->subheader->cur_id; i++){
             fseek(file, header->id_sequence[i], SEEK_SET);
             read_basic_tuple(&cur_tuple, file, header);
-
+            printf("--- TUPLE %3zu ---\n", i);
             for(size_t iter = 0; iter < size; iter++){
                 if (header->pattern[iter]->header->type == STRING_TYPE){
                     char *s;
                     read_string_from_tuple(file, &s, header, cur_tuple->data[iter]);
-                    printf("%s: %s\n", header->pattern[iter]->key_value, s);
+                    printf("%-20s %s\n", header->pattern[iter]->key_value, s);
                 } else {
-                    printf("%s: %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
+                    printf("%-20s %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
                 }
             }
 
