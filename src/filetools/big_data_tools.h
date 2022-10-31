@@ -49,7 +49,7 @@ enum file_write_status init_empty_file(FILE *file, char **pattern, uint32_t *typ
  * @param pattern_size размер массива шаблона
  * @return статус записи
  */
-enum file_write_status write_tree_header(FILE *file, struct tree_header *header, size_t pattern_size);
+enum file_write_status write_tree_header(FILE *file, struct tree_header *header);
 
 /**
  * Прочитать строчный кортеж

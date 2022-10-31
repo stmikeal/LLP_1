@@ -114,7 +114,8 @@ static enum file_write_status write_id_sequence(FILE *file, uint64_t *id_sequenc
     return code;
 }
 
-enum file_write_status write_tree_header(FILE *file, struct tree_header *header, size_t pattern_size){
+enum file_write_status write_tree_header(FILE *file, struct tree_header *header){
+    size_t pattern_size = header->subheader->pattern_size;
     enum file_write_status code = write_tree_subheader(file, header->subheader);
     code |= write_pattern(file, header->pattern, pattern_size);
     size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
@@ -126,7 +127,7 @@ enum file_write_status init_empty_file(FILE *file, char **pattern, uint32_t *typ
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = (struct tree_header *) malloc(sizeof(struct tree_header));
     generate_empty_tree_header(pattern, types, pattern_size, key_sizes, header);
-    return write_tree_header(file, header, pattern_size);
+    return write_tree_header(file, header);
 }
 
 enum file_open_status open_file_anyway(FILE **file, char *filename){

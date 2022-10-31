@@ -62,7 +62,19 @@ void get_types(FILE *file, uint32_t **types, size_t *size){
 }
 
 enum crud_operation_status change_parameter(FILE *file, enum tree_subheader_parameter parameter, uint64_t value){
-    return 0;
+    fseek(file, 0, SEEK_SET);
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t pos;
+    read_tree_header(header, file, &pos);
+    switch (parameter){
+        case PAR_CURRENT_ID: header->subheader->cur_id = value; break;
+        case PAR_FIRST_SEQ: header->subheader->first_seq = value; break;
+        case PAR_SECOND_SEQ: header->subheader->second_seq = value; break;
+        case PAR_ROOT_OFFSET: header->subheader->root_offset = value; break;
+        default: break;
+    }
+    write_tree_header(file, header);
+    free(header);
 }
 
 
