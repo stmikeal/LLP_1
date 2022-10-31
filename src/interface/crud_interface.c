@@ -27,6 +27,7 @@ enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t pare
 enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id) {
     uint64_t offset;
     id_to_offset(file, id, &offset);
+    if (offset == NULL_VALUE) return CRUD_INVALID;
     struct tuple* cur_tuple;
     uint32_t *types;
     size_t size;

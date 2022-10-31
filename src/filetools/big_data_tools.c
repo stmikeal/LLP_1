@@ -215,6 +215,7 @@ void print_tree_header_from_file(FILE *file) {
         struct tuple* cur_tuple = malloc(sizeof(struct tuple));
 
         for(size_t i = 0; i < header->subheader->cur_id; i++){
+            if (header->id_sequence[i] == NULL_VALUE) continue;
             fseek(file, header->id_sequence[i], SEEK_SET);
             read_basic_tuple(&cur_tuple, file, header->subheader->pattern_size);
             printf("--- TUPLE %3zu ---\n", i);
