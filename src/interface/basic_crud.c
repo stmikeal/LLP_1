@@ -104,9 +104,7 @@ enum crud_operation_status append_to_id_array(FILE *file, uint64_t offset) {
     return 0;
 }
 
-enum crud_operation_status remove_from_id_array(FILE *file, uint64_t id) {
-    uint64_t* offset = malloc(sizeof(uint64_t));
-    id_to_offset(file, id, offset);
+enum crud_operation_status remove_from_id_array(FILE *file, uint64_t id, uint64_t* offset) {
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t pos;
@@ -114,10 +112,11 @@ enum crud_operation_status remove_from_id_array(FILE *file, uint64_t id) {
     if (header->id_sequence[id] == 0)
         return CRUD_INVALID;
     else {
-        header->id_sequence[id] = 0;
-        if (header->subheader->cur_id == id) {
+        *offset = header->id_sequence[id];
+        if (header->subheader->cur_id-1 == id) {
             header->subheader->cur_id--;
         }
+        header->id_sequence[id] = 0;
         write_tree_header(file, header);
         free(header);
         return CRUD_OK;

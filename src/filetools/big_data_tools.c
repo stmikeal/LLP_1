@@ -228,5 +228,7 @@ void print_tree_header_from_file(FILE *file) {
                 }
             }
 
+            printf("\n");
+
         }
     }

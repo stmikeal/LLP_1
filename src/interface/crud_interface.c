@@ -42,3 +42,24 @@ enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id)
         }
     }
 }
+
+enum crud_operation_status remove_tuple(FILE *file, uint64_t id){
+    uint64_t offset;
+    if (remove_from_id_array(file, id, &offset) == CRUD_INVALID){
+        // invalid id
+        return CRUD_INVALID;
+    }
+    uint32_t* types;
+    size_t size;
+    get_types(file, &types, &size);
+    fseek(file, (long) -(get_real_tuple_size(size) + sizeof(union tuple_header)), SEEK_END);
+    uint64_t pos_from = ftell(file);
+    fseek(file, (long) offset, SEEK_SET);
+    uint64_t pos_to = ftell(file);;
+
+    if (pos_from != pos_to) {
+        swap_tuple_to(file, pos_from, pos_to, get_real_tuple_size(size) + sizeof(union tuple_header));
+    }
+    ftruncate(fileno(file), (long) pos_from);
+    return CRUD_OK;
+}
