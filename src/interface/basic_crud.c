@@ -75,6 +75,19 @@ enum crud_operation_status change_parameter(FILE *file, enum tree_subheader_para
     }
     write_tree_header(file, header);
     free(header);
+    return 0;
+}
+
+enum crud_operation_status append_to_id_array(FILE *file, uint64_t offset){
+    fseek(file, 0, SEEK_SET);
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t pos;
+    read_tree_header(header, file, &pos);
+    header->id_sequence[header->subheader->cur_id] = offset;
+    header->subheader->cur_id = header->subheader->cur_id + 1;
+    write_tree_header(file, header);
+    free(header);
+    return 0;
 }
 
 
