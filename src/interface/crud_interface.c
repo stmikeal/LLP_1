@@ -19,7 +19,7 @@ enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t pare
     }
     size_t full_tuple_size = sizeof(union tuple_header) + get_real_tuple_size(size);
     enum crud_operation_status status = insert_new_tuple(file, new_tuple, full_tuple_size, link);
-    append_to_id_array(file, *link)
+    append_to_id_array(file, *link);
     free(link);
     return status;
 }
