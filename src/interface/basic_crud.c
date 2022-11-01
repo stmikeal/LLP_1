@@ -38,7 +38,7 @@ enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, siz
 }
 
 
-enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t *str_pos) {
+enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t par_pos, uint64_t *str_pos) {
     size_t len = strlen(string);
     size_t count = len / tuple_size + (len % tuple_size ? 1 : 0);
     struct tuple *temp_tuple = malloc(sizeof(struct tuple));
@@ -54,7 +54,7 @@ enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t 
             temp_tuple->header.next = pos + (tuple_size + sizeof(union tuple_header)) * (iter + 1);
         }
         if (0 == iter) {
-            temp_tuple->header.prev = 0;
+            temp_tuple->header.prev = par_pos;
         } else {
             temp_tuple->header.prev = pos + (tuple_size + sizeof(union tuple_header)) * (iter - 1);
         }
@@ -217,7 +217,7 @@ enum crud_operation_status change_string_tuple(FILE *file, uint64_t offset, char
     } while (cur_tuple->header.next && len > 0);
     uint64_t fpos;
     if (len > 0) {
-        insert_string_tuple(file, new_string, size, &fpos);
+        insert_string_tuple(file, new_string, size, offset,&fpos);
         cur_tuple->header.next = fpos;
         fseek(file, offset, SEEK_SET);
         write_tuple(file, cur_tuple, size);

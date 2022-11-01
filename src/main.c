@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     str = "Чувак";
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 0);
-    remove_tuple(file, 0);
+    //remove_tuple(file, 0);
 
     print_tree_header_from_file(file);
     print_tuple_array_from_file(file);
