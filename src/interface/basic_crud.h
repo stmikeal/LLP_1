@@ -36,6 +36,7 @@ enum crud_operation_status append_to_id_array(FILE *file, uint64_t offset);
 enum crud_operation_status remove_from_id_array(FILE *file, uint64_t id, uint64_t* offset);
 enum crud_operation_status id_to_offset(FILE *file, uint64_t id, uint64_t* offset);
 enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offset);
+enum crud_operation_status change_string_tuple(FILE *file, uint64_t offset, char *new_string,  uint64_t size);
 /**
  * Статус операции
  */

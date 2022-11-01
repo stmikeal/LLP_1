@@ -161,6 +161,31 @@ enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offse
     return CRUD_INVALID;
 }
 
+enum crud_operation_status change_string_tuple(FILE *file, uint64_t offset, char *new_string, uint64_t size) {
+    struct tuple *cur_tuple = malloc(sizeof(struct tuple));
+    int64_t len = strlen(new_string);
+    uint64_t old_offset = offset;
+    do {
+        offset = old_offset;
+        fseek(file, offset, SEEK_SET);
+        read_basic_tuple(&cur_tuple, file, size);
+        fseek(file, offset, SEEK_SET);
+        cur_tuple->data = (uint64_t * )(new_string);
+        new_string = new_string + size;
+        write_tuple(file, cur_tuple, size);
+        old_offset = cur_tuple->header.next;
+        len -= size;
+    } while (cur_tuple->header.next && len > 0);
+    uint64_t fpos;
+    if (len > 0) {
+        insert_string_tuple(file, new_string, size, &fpos);
+        cur_tuple->header.next = fpos;
+        fseek(file, offset, SEEK_SET);
+        write_tuple(file, cur_tuple, size);
+    }
+    return CRUD_OK;
+}
+
 
 
 

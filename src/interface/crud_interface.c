@@ -125,3 +125,26 @@ enum crud_operation_status find_by_parent(FILE *file, uint64_t parent_id, struct
     }
     return 0;
 }
+
+enum crud_operation_status update_tuple(FILE *file, uint64_t field_number, uint64_t *new_value, uint64_t id){
+    uint32_t *types;
+    size_t size;
+    get_types(file, &types, &size);
+    uint64_t type = types[field_number];
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t pos;
+    read_tree_header(header, file, &pos);
+    uint64_t  offset;
+    id_to_offset(file, id, &offset);
+    struct tuple* cur_tuple = malloc(sizeof(struct tuple));
+    fseek(file, offset, SEEK_SET);
+    read_basic_tuple(&cur_tuple, file, size);
+    if (type == STRING_TYPE){
+        change_string_tuple(file, cur_tuple->data[field_number], (char *) new_value, get_real_tuple_size(size));
+    } else {
+        cur_tuple->data[field_number] = *new_value;
+        fseek(file, offset, SEEK_SET);
+        write_tuple(file, cur_tuple, size);
+    }
+    return 0;
+}
