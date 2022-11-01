@@ -70,10 +70,14 @@ enum crud_operation_status remove_tuple(FILE *file, uint64_t id) {
 static void append_to_result_list(struct tuple **tuple_to_add, struct result_list_tuple **result){
     if ((*result) == NULL) {
         *result = malloc(sizeof(struct result_list_tuple));
+        (*result)->prev = (*result);
+        (*result)->next = (*result);
     } else {
         struct result_list_tuple *new_result = malloc(sizeof(struct result_list_tuple));
         (*result)->prev->next = new_result;
         (*result)->prev = new_result;
+        new_result->prev = (*result)->prev;
+        new_result->next = *result;
         *result = new_result;
     }
     (*result)->value = *tuple_to_add;
