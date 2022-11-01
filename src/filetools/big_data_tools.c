@@ -66,7 +66,7 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_
     if (header->alloc) {
         *tuple = (struct tuple *)header->alloc;
         free(header);
-        return code;
+        //return code;
     }
     fseek(file, -(sizeof(union tuple_header)), SEEK_CUR);
     struct tuple *temp_tuple = (struct tuple *) malloc(sizeof(struct tuple));
