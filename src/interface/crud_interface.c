@@ -47,24 +47,34 @@ enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id)
     }
 }
 
-enum crud_operation_status remove_tuple(FILE *file, uint64_t id) {
-    //todo а рекурсивно удалять всех детей кто будет?
-    uint64_t offset;
-    if (remove_from_id_array(file, id, &offset) == CRUD_INVALID) {
-        // invalid id
-        return CRUD_INVALID;
+static enum crud_operation_status remove_recursive_tuple_with_values
+        (FILE *file, uint64_t id, uint32_t *types, size_t pattern_size) {
+
+    uint64_t size = get_real_tuple_size(pattern_size);
+    uint64_t offset = remove_from_id_array(file, id);
+    if (offset == NULL_VALUE) return CRUD_INVALID;
+    struct uint64_list *childs = get_childs_by_id(file, id);
+    for(struct uint64_list *iter = childs; iter != NULL && iter->next != NULL; iter = iter->next) {
+        remove_recursive_tuple_with_values(file, iter->value, types, pattern_size);
     }
+    struct tuple *cur_tuple;
+    fseek(file, (int32_t) offset, SEEK_SET);
+    read_basic_tuple(&cur_tuple, file, pattern_size);
+    for(size_t iter = 0; iter < pattern_size; iter++) {
+        if (types[iter] == STRING_TYPE) {
+            remove_string_from_file(file, cur_tuple->data[iter], size);
+        }
+
+    }
+    return swap_with_last(file, offset, size);
+}
+
+enum crud_operation_status remove_tuple(FILE *file, uint64_t id) {
     uint32_t *types;
     size_t size;
     get_types(file, &types, &size);
-    fseek(file, (long) -(get_real_tuple_size(size) + sizeof(union tuple_header)), SEEK_END);
-    uint64_t pos_from = ftell(file);
-    fseek(file, (long) offset, SEEK_SET);
-    uint64_t pos_to = ftell(file);;
 
-    swap_tuple_to(file, pos_from, pos_to, get_real_tuple_size(size) + sizeof(union tuple_header));
-
-    return CRUD_OK;
+    return remove_recursive_tuple_with_values(file, id, types, size);
 }
 
 static void append_to_result_list(struct tuple **tuple_to_add, struct result_list_tuple **result){

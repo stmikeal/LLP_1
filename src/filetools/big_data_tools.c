@@ -55,6 +55,11 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, s
     return code;
 }
 
+enum file_read_status read_tree_header_np(struct tree_header *header, FILE *file) {
+    size_t pos;
+    return read_tree_header(header, file, &pos);
+}
+
 enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size) {
     union tuple_header *header = (union tuple_header *) malloc(sizeof(union tuple_header));
     enum file_read_status code = read_from_file(header, file, sizeof(union tuple_header));
@@ -198,7 +203,6 @@ void print_tree_header_from_file(FILE *file) {
     size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
     for (size_t iter = 0; iter < (real_id_array_size / PRINT_ID_ARRAY_LEN); iter++) {
         for (size_t inner_iter = 0; inner_iter < PRINT_ID_ARRAY_LEN; inner_iter++) {
-            //printf("%ld", iter * PRINT_ID_ARRAY_LEN + inner_iter);
             printf("%16lx ", header->id_sequence[iter * PRINT_ID_ARRAY_LEN + inner_iter]);
         }
         printf("\n");

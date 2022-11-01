@@ -10,7 +10,6 @@ EXECUTABLE=main
 
 .PHONY: all
 all: build run
-
 run:
 	./$(EXECUTABLE)
 

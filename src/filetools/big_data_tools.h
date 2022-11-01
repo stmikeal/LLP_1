@@ -81,5 +81,6 @@ void print_tree_header_from_file(FILE *file);
 void print_tuple_array_from_file(FILE *file);
 enum file_read_status read_string_from_tuple(FILE *file, char **string, uint64_t pattern_size, uint64_t offset);
 enum file_write_status write_tuple(FILE *file, struct tuple *tuple, size_t tuple_size);
+enum file_read_status read_tree_header_np(struct tree_header *header, FILE *file);
 
 #endif
