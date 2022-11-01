@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 1298);
     fields[0] = 123;
-    str = "Чепух";
+    str = "Чувак";
     fields[1] = (uint64_t) str;
     add_tuple(file, fields, 3);
     //remove_tuple(file, 0);
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     cond = 10;
     update_tuple(file, 0, &cond, 0);
 
-    char *new_string = "Точно не Чепух";
+    char *new_string = "Лебовски";
     update_tuple(file, 1, (uint64_t *) new_string, 1);
 
     print_tuple_array_from_file(file);
