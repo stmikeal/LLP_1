@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
     fields[0] = 123;
     str = "Чувак";
     fields[1] = (uint64_t) str;
-    add_tuple(file, fields, 0);
-    remove_tuple(file, 0);
+    add_tuple(file, fields, 123);
+    //remove_tuple(file, 1);
 
     print_tree_header_from_file(file);
     print_tuple_array_from_file(file);
@@ -57,13 +57,13 @@ int main(int argc, char** argv) {
     else printf("No result present\n");
 
     result = NULL;
-    find_by_parent(file, 3, &result);
+    find_by_parent(file, 123, &result);
     printf("--- FIND RESULT ---\n");
     if (result != NULL) printf("%lu\n", (uint64_t) (*result).value->header.parent);
     else printf("No result present\n");
 
     result = NULL;
-    find_by_parent(file, 1298, &result);
+    find_by_parent(file, 13, &result);
     printf("--- FIND RESULT ---\n");
     if (result != NULL) printf("%lu\n", (uint64_t) (*result).value->header.parent);
     else printf("No result present\n");
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     update_tuple(file, 0, &cond, 0);
 
     char *new_string = "Лебовски";
-    //update_tuple(file, 1, (uint64_t *) new_string, 1);
+    update_tuple(file, 1, (uint64_t *) new_string, 1);
 
     print_tuple_array_from_file(file);
     /*int flag = 0;

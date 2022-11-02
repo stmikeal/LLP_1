@@ -57,7 +57,7 @@ static enum crud_operation_status remove_recursive_tuple_with_values
     uint64_t offset = remove_from_id_array(file, id);
     if (offset == NULL_VALUE) return CRUD_INVALID;
     struct uint64_list *childs = get_childs_by_id(file, id);
-    for(struct uint64_list *iter = childs; iter != NULL && iter->next != NULL; iter = iter->next) {
+    for(struct uint64_list *iter = childs; iter != NULL; iter = iter->next) {
         remove_recursive_tuple_with_values(file, iter->value, types, pattern_size);
     }
     struct tuple *cur_tuple;
@@ -83,13 +83,9 @@ enum crud_operation_status remove_tuple(FILE *file, uint64_t id) {
 static void append_to_result_list(struct tuple **tuple_to_add, struct result_list_tuple **result){
     if ((*result) == NULL) {
         *result = malloc(sizeof(struct result_list_tuple));
-        (*result)->prev = (*result);
-        (*result)->next = (*result);
+        (*result)->next = NULL;
     } else {
         struct result_list_tuple *new_result = malloc(sizeof(struct result_list_tuple));
-        (*result)->prev->next = new_result;
-        (*result)->prev = new_result;
-        new_result->prev = (*result)->prev;
         new_result->next = *result;
         *result = new_result;
     }

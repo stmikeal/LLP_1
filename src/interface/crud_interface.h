@@ -3,7 +3,6 @@
 #include "basic_crud.h"
 
 struct result_list_tuple {
-    struct result_list_tuple *prev;
     struct tuple *value;
     struct result_list_tuple *next;
 };
