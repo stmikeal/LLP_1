@@ -159,6 +159,12 @@ enum file_open_status open_file_anyway(FILE **file, char *filename){
     if (code) {
         code = open_new_file(filename, file);
     }
+    char *s1 = "name";
+    char *s2 = "code";
+    char *ss[2] = {s1, s2};
+    uint32_t t[2] = {3, 1};
+    size_t si[2] = {5, 5};
+    init_empty_file(*file, ss, t, 2, si);
     return code;
 }
 

@@ -1,6 +1,15 @@
 #ifndef INTERACTIVE_H
 #define INTERACTIVE_H
 
-void interactive_mode(char *filename);
+#include "../interface/crud_interface.h"
+#include <string.h>
+#include <regex.h>
+#include "console_tools.h"
+#include "../commands/add_command.h"
+#include "../commands/find_command.h"
+#include "../commands/remove_command.h"
+#include "../commands/update_command.h"
+
+int32_t interactive_mode(char *filename);
 
 #endif

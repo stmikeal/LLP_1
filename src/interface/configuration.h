@@ -11,5 +11,14 @@
 #define INTEGER_TYPE 1
 #define FLOAT_TYPE 2
 #define STRING_TYPE 3
+#define MAGIC_NUMBER 42
+#define BUFFER_COMMAND_SIZE 256
+#define BUFFER_FIELD_SIZE 1024
+
+/* Prime numbers to hash */
+#define AHASH 54059
+#define BHASH 76963
+#define CHASH 86969
+#define INITHASH 37
 
 #endif
