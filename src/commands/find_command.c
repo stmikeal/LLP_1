@@ -75,7 +75,7 @@ enum crud_operation_status find_condition(FILE *file) {
     printf("Enter expression to equaling\n");
     printf("Exp: ");
     uint64_t value;
-    char *s;
+    char s[BUFFER_FIELD_SIZE];
     switch (header->pattern[number]->header->type) {
         case INTEGER_TYPE: scanf("%ld", &value);; break;
         case BOOLEAN_TYPE: scanf("%ld", &value);; break;

@@ -107,12 +107,10 @@ enum crud_operation_status find_by_field(FILE *file, uint64_t field_number, uint
         if (type == STRING_TYPE){
             char *s;
             read_string_from_tuple(file, &s, size, cur_tuple->data[field_number]);
-            if (!strcmp(s, (char *) condition)) {
+            if (!strcmp(s, (char *) *condition)) {
                 append_to_result_list(&cur_tuple, result);
             }
         } else {
-            printf("%ld\n", cur_tuple->data[1]);
-            printf("%ld\n", *condition);
             if (cur_tuple->data[field_number] == *condition) {
                 append_to_result_list(&cur_tuple, result);
             }
@@ -169,11 +167,11 @@ enum crud_operation_status update_tuple(FILE *file, uint64_t field_number, uint6
     fseek(file, offset, SEEK_SET);
     read_basic_tuple(&cur_tuple, file, size);
     if (type == STRING_TYPE){
-        change_string_tuple(file, cur_tuple->data[field_number], (char *) new_value, get_real_tuple_size(size));
+        change_string_tuple(file, cur_tuple->data[field_number], (char *) *new_value, get_real_tuple_size(size));
     } else {
         cur_tuple->data[field_number] = *new_value;
         fseek(file, offset, SEEK_SET);
-        write_tuple(file, cur_tuple, size);
+        write_tuple(file, cur_tuple, get_real_tuple_size(size));
     }
     return 0;
 }
