@@ -38,6 +38,7 @@ enum crud_operation_status id_to_offset(FILE *file, uint64_t id, uint64_t* offse
 enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offset);
 enum crud_operation_status change_string_tuple(FILE *file, uint64_t offset, char *new_string,  uint64_t size);
 struct uint64_list *get_childs_by_id(FILE *file, uint64_t id);
+void free_uint64_list(struct uint64_list *result);
 enum crud_operation_status swap_with_last(FILE *file, uint64_t offset, uint64_t size);
 enum crud_operation_status remove_string_from_file(FILE* file, uint64_t offset, uint64_t size);
 /**

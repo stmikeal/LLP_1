@@ -27,5 +27,6 @@ enum crud_operation_status update_execute(FILE *file){
     enum crud_operation_status status = update_tuple(file, number, &value, id);
     if (status == CRUD_OK) printf("TUPLE %3ld UPDATED\n", header->subheader->cur_id);
     else printf("NOT UPDATED\n");
+    free_tree_header(header);
     return status;
 }

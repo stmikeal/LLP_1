@@ -22,5 +22,6 @@ enum crud_operation_status add_execute(FILE *file){
     enum crud_operation_status status = add_tuple(file, pattern, parent_id);
     if (status == CRUD_OK) printf("TUPLE %3ld INSERTED\n", header->subheader->cur_id);
     else printf("NOT INSERTED\n");
+    free_tree_header(header);
     return status;
 }

@@ -55,6 +55,18 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, s
     return code;
 }
 
+void free_tree_header(struct tree_header *header) {
+    free(header->id_sequence);
+    for (size_t iter = 0; iter < header->subheader->pattern_size; iter++){
+        free(header->pattern[iter]->header);
+        free(header->pattern[iter]->key_value);
+        free(header->pattern[iter]);
+    }
+    free(header->pattern);
+    free(header->subheader);
+    free(header);
+}
+
 enum file_read_status read_tree_header_np(struct tree_header *header, FILE *file) {
     size_t pos;
     return read_tree_header(header, file, &pos);
@@ -65,7 +77,7 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_
     enum file_read_status code = read_from_file(header, file, sizeof(union tuple_header));
     struct tuple *temp_tuple = (struct tuple *) malloc(sizeof(struct tuple));
     temp_tuple->header = *header;
-
+    free(header);
     uint64_t *data = (uint64_t *) malloc(get_real_tuple_size(pattern_size));
     code |= read_from_file(data, file, get_real_tuple_size(pattern_size));
     temp_tuple->data = data;
@@ -73,6 +85,11 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_
     *tuple = temp_tuple;
 
     return code;
+}
+
+void free_tuple(struct tuple *tuple) {
+    free(tuple->data);
+    free(tuple);
 }
 
 enum file_read_status read_string_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size) {
@@ -101,6 +118,7 @@ static size_t how_long_string_is(FILE *file, uint64_t offset){
         read_from_file(temp_header, file, sizeof(union tuple_header));
         len++;
     }
+    free(temp_header);
     return len;
 }
 
@@ -114,6 +132,7 @@ enum file_read_status read_string_from_tuple(FILE *file, char **string, uint64_t
         read_string_tuple(&temp_tuple, file, pattern_size);
         offset = temp_tuple->header.next;
         strncpy((*string) + rts * iter, (char *) temp_tuple->data, rts);
+        free_tuple(temp_tuple);
     }
     return 0;
 }
@@ -151,7 +170,9 @@ enum file_write_status init_empty_file(FILE *file, char **pattern, uint32_t *typ
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = (struct tree_header *) malloc(sizeof(struct tree_header));
     generate_empty_tree_header(pattern, types, pattern_size, key_sizes, header);
-    return write_tree_header(file, header);
+    enum file_write_status code =  write_tree_header(file, header);
+    free_tree_header(header);
+    return  code;
 }
 
 enum file_open_status open_file_anyway(FILE **file, char *filename){
@@ -172,7 +193,7 @@ enum file_write_status write_tuple(FILE *file, struct tuple *tuple, size_t tuple
     union tuple_header *tuple_header = malloc(sizeof(union  tuple_header));
     *tuple_header = tuple->header;
     enum file_write_status code = write_to_file(tuple_header, file, sizeof(union  tuple_header));
-    free(tuple_header);
+    //free(tuple_header);
     code |= write_to_file(tuple->data, file, tuple_size);
     return code;
 }
@@ -181,6 +202,7 @@ void print_tree_header_from_file(FILE *file) {
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t *pos = malloc(sizeof(size_t));
     read_tree_header(header, file, pos);
+    free(pos);
     printf("--- SUBHEADER ---\n");
     printf("%-20s%ld\n", "ASCII Signature: ", header->subheader->ASCII_signature);
     printf("%-20s%ld\n", "Root Offset: ", header->subheader->root_offset);
@@ -203,6 +225,7 @@ void print_tree_header_from_file(FILE *file) {
         }
         printf("\n");
     }
+    free_tree_header(header);
 }
 
     void print_tuple_array_from_file(FILE *file){
@@ -212,11 +235,11 @@ void print_tree_header_from_file(FILE *file) {
         uint32_t* fields;
         size_t size;
         get_types(file, &fields, &size);
-        struct tuple* cur_tuple = malloc(sizeof(struct tuple));
 
         for(size_t i = 0; i < header->subheader->cur_id; i++){
             if (header->id_sequence[i] == NULL_VALUE) continue;
             fseek(file, header->id_sequence[i], SEEK_SET);
+            struct tuple* cur_tuple;
             read_basic_tuple(&cur_tuple, file, header->subheader->pattern_size);
             printf("--- TUPLE %3zu ---\n", i);
             for(size_t iter = 0; iter < size; iter++){
@@ -228,6 +251,7 @@ void print_tree_header_from_file(FILE *file) {
                     printf("%-20s %lu\n", header->pattern[iter]->key_value, cur_tuple->data[iter]);
                 }
             }
-
+            free_tuple(cur_tuple);
         }
+        free_tree_header(header);
     }

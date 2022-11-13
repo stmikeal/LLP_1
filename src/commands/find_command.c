@@ -16,28 +16,41 @@ static void print_result_list(FILE *file, struct result_list_tuple *list){
                 default:
                     read_string_from_tuple(file, &s, header->subheader->pattern_size, list->value->data[iter]);
                     printf("%-20s: %s\n", header->pattern[iter]->key_value, s);
+                    free(s);
                     break;
             }
         }
         list = list->next;
     }
+    free_tree_header(header);
 }
 
 enum crud_operation_status find_all_res(FILE *file) {
     struct result_list_tuple *list = NULL;
     find_all(file, &list);
     print_result_list(file, list);
+    free_result_list(list);
 }
 
 enum crud_operation_status find_single(FILE *file) {
     printf("Enter id\n");
     printf("%-20s:", "Id");
     uint64_t  id;
-    scanf("%ld", &id);
-    uint64_t *fields;
-    get_tuple(file, &fields, id);
     struct tree_header *header = malloc(sizeof(struct tree_header));
     read_tree_header_np(header, file);
+    scanf("%ld", &id);
+    uint64_t *fields;
+    if (header->subheader->cur_id < id){
+        printf("Too large id\n");
+        free_tree_header(header);
+        return CRUD_INVALID;
+    }
+    enum crud_operation_status status = get_tuple(file, &fields, id);
+    if (status) {
+        printf("No result\n");
+        free_tree_header(header);
+        return CRUD_INVALID;
+    }
     for (uint64_t iter = 0; iter < header->subheader->pattern_size; iter++) {
         switch (header->pattern[iter]->header->type) {
             case INTEGER_TYPE: printf("%-20s: %ld\n", header->pattern[iter]->key_value, fields[iter]); break;
@@ -45,10 +58,12 @@ enum crud_operation_status find_single(FILE *file) {
             case FLOAT_TYPE: printf("%-20s: %lf\n", header->pattern[iter]->key_value, (double) fields[iter]); break;
             default:
                 printf("%-20s: %s\n", header->pattern[iter]->key_value, (char *)fields[iter]);
+                free((char *)fields[iter]);
                 break;
         }
     }
-    free(header);
+    free(fields);
+    free_tree_header(header);
 }
 
 enum crud_operation_status find_parent(FILE *file) {
@@ -59,6 +74,7 @@ enum crud_operation_status find_parent(FILE *file) {
     struct result_list_tuple *list = NULL;
     find_by_parent(file, id, &list);
     print_result_list(file, list);
+    free_result_list(list);
 }
 
 enum crud_operation_status find_condition(FILE *file) {
@@ -85,6 +101,8 @@ enum crud_operation_status find_condition(FILE *file) {
     struct result_list_tuple *list = NULL;
     find_by_field(file, number, &value, &list);
     print_result_list(file, list);
+    free_tree_header(header);
+    free_result_list(list);
 }
 
 enum crud_operation_status find_execute(FILE *file){

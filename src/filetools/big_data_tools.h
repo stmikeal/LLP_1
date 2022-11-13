@@ -79,6 +79,8 @@ enum file_read_status read_basic_tuple(struct tuple **tuple, FILE *file, uint64_
 enum file_read_status read_tree_header(struct tree_header *header, FILE *file, size_t *fpos);
 void print_tree_header_from_file(FILE *file);
 void print_tuple_array_from_file(FILE *file);
+void free_tree_header(struct tree_header *header);
+void free_tuple(struct tuple *tuple);
 enum file_read_status read_string_from_tuple(FILE *file, char **string, uint64_t pattern_size, uint64_t offset);
 enum file_write_status write_tuple(FILE *file, struct tuple *tuple, size_t tuple_size);
 enum file_read_status read_tree_header_np(struct tree_header *header, FILE *file);
