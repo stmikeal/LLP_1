@@ -3,7 +3,6 @@
 
 #include "../interface/crud_interface.h"
 #include <string.h>
-#include <regex.h>
 #include "console_tools.h"
 #include "../commands/add_command.h"
 #include "../commands/find_command.h"
