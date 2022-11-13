@@ -58,6 +58,47 @@ static void exit_program() {
     loop++;
 }
 
+int32_t generator_mode(char *filename, char *data_filename) {
+    FILE *file;
+    enum file_open_status open_status = open_file_anyway(&file, filename);
+    if (open_status) return open_status;
+
+    FILE *gen_file = fopen(data_filename, "r");
+
+    init_params();
+    print_program_header();
+
+    char s[BUFFER_FIELD_SIZE];
+    uint64_t parent;
+    uint64_t code;
+    uint64_t fields[2];
+    while(!feof(gen_file)){
+        if(fscanf(gen_file, "%ld code=%ld name=%s\n", &parent, &code, s)){
+            fields[0] = (uint64_t) s;
+            fields[1] = code;
+            add_tuple(file, fields, parent);
+        }
+    }
+
+
+    char command[BUFFER_COMMAND_SIZE];
+    while(!loop) {
+        read_command_line(command);
+        switch (parse_command(command)) {
+            case ADD_COMMAND: add_execute(file); break;
+            case REMOVE_COMMAND: remove_execute(file); break;
+            case UPDATE_COMMAND: update_execute(file); break;
+            case FIND_COMMAND: find_execute(file); break;
+            case HELP_COMMAND: print_help();break;
+            case EXIT_COMMAND: exit_program(); break;
+            default: print_wrong_command(); break;
+        }
+    }
+
+
+    close_file(file);
+}
+
 int32_t interactive_mode(char *filename) {
     FILE *file;
     enum file_open_status open_status = open_file_anyway(&file, filename);
