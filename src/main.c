@@ -1,5 +1,5 @@
 #include "ui/interactive.h"
-#include "interface/configuration.h"
+#include "configuration.h"
 
 
 int main(int argc, char** argv) {

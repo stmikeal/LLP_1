@@ -1,10 +1,8 @@
 #ifndef EMPTY_GENERATOR_H
-#define GENERATOR_H
-#include "../interface/signatures.h"
-#include "../filetools/basic_file_manager.h"
+#define EMPTY_GENERATOR_H
+
 #include <stdlib.h>
-#include "../interface/configuration.h"
-#include "../filetools/big_data_tools.h"
+#include "../adv_types/tree_header_tools.h"
 
 /**
  * Генерирует пустой заголовок для файла

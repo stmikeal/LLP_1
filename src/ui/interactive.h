@@ -1,9 +1,9 @@
 #ifndef INTERACTIVE_H
 #define INTERACTIVE_H
 
-#include "../interface/crud_interface.h"
+#include "../crud_tools/crud.h"
+#include "../adv_tools/file_manager.h"
 #include <string.h>
-#include <regex.h>
 #include "console_tools.h"
 #include "../commands/add_command.h"
 #include "../commands/find_command.h"

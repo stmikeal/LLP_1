@@ -1,5 +1,5 @@
 #include "console_tools.h"
-#include "../interface/crud_interface.h"
+#include <stdio.h>
 
 const char *command_hint = ">>> ";
 
