@@ -115,9 +115,9 @@ enum crud_operation_status find_by_field(FILE *file, uint64_t field_number, uint
         }
 
     }
-    free_tree_header(header);
-    free_tuple(cur_tuple);
-    free(types);
+    //free_tree_header(header);
+    //free_tuple(cur_tuple);
+    //free(types);
     return 0;
 }
 

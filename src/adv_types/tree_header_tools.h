@@ -2,7 +2,7 @@
 #define TREE_HEADER_TOOLS_H
 
 #include "../basic_types/tree_header.h"
-#include "../basic_types/tuple.h"
+#include "../adv_types/tuple_tools.h"
 #include "../basic_types/list.h"
 #include "crud_status.h"
 
