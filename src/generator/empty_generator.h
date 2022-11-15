@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include "../adv_types/tree_header_tools.h"
-
+#include "../basic_types/tree_header.h"
 /**
  * Генерирует пустой заголовок для файла
  * @param pattern шаблон вершин

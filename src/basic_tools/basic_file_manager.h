@@ -67,7 +67,8 @@ enum file_write_status {
  */
 enum file_open_status {
     OPEN_OK = 0,
-    OPEN_FAILED
+    OPEN_FAILED,
+    OPEN_NEW
 };
 
 #endif

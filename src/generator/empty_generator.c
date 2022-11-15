@@ -18,7 +18,7 @@ static void generate_empty_pattern(struct key **key_pattern, char **pattern, uin
     size_t real_size;
     for (size_t iter = pattern_size; iter-- > 0; key_pattern++ && pattern++ && types++ && key_sizes++) {
         pattern_key = malloc(sizeof(struct key));
-        real_size = (*key_sizes)/FILE_GRANULARITY*FILE_GRANULARITY + ( (*key_sizes)%FILE_GRANULARITY ? FILE_GRANULARITY : 0);
+        real_size = get_real_string_size(*key_sizes);
         char *appended_string = malloc(sizeof(char) * real_size);
         copy_string(*pattern, appended_string, *key_sizes, real_size);
         pattern_key->key_value = appended_string;

@@ -31,8 +31,8 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, s
     }
 
     size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
-    header->id_sequence = (uint64_t *) malloc(real_id_array_size);
-    code |= read_from_file(header->id_sequence, file, real_id_array_size);
+    header->id_sequence = (uint64_t *) malloc(sizeof(uint64_t)*real_id_array_size);
+    code |= read_from_file(header->id_sequence, file, sizeof(uint64_t)*real_id_array_size);
 
     *fpos = ftell(file);
 
@@ -83,7 +83,7 @@ enum file_write_status write_tree_header(FILE *file, struct tree_header *header)
     code |= write_pattern(file, header->pattern, header->subheader->pattern_size);
 
     size_t real_id_array_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
-    code |= write_id_sequence(file, header->id_sequence, real_id_array_size);
+    code |= write_id_sequence(file, header->id_sequence, sizeof(uint64_t)*real_id_array_size);
 
     return code;
 }

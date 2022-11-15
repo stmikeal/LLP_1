@@ -21,4 +21,14 @@
 #define CHASH 86969
 #define INITHASH 37
 
+#include "adv_tools/file_manager.h"
+
+struct file_config {
+    char *filename;
+    uint8_t generator_flag;
+    char *generator_filename;
+};
+
+struct file_config *new_file_config();
+
 #endif

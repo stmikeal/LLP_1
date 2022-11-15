@@ -10,7 +10,7 @@
 #include "../commands/remove_command.h"
 #include "../commands/update_command.h"
 
-int32_t interactive_mode(char *filename);
+int32_t interactive_mode(struct file_config *config);
 int32_t generator_mode(char *filename, char *data_filename);
 
 #endif

@@ -1,14 +1,23 @@
 #include "ui/interactive.h"
-#include "configuration.h"
+
 
 
 int main(int argc, char** argv) {
-    char *filename = argv[argc-1];
-    if (argc > 2) {
-        return generator_mode(filename, argv[argc-2]);
+    struct file_config *config = new_file_config();
+    if (argc == 4) {
+        config->filename = argv[argc-1];
+        config->generator_filename = argv[argc-2];
+        config->generator_flag = !NULL_VALUE;
+    } else if (argc == 2){
+        config->filename = argv[argc-1];
     } else {
-        return interactive_mode(filename);
+        printf("Неправильные аргументы программы.\n");
+        printf("main [flags] <output filename>\n");
+        printf("[flags]\n");
+        printf("-g | fill file with generator data, have to add <generator filename>.");
     }
-
+    int code = interactive_mode(config);
+    free(config);
+    return code;
 }
 
