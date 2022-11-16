@@ -90,4 +90,5 @@ void get_types(FILE *file, uint32_t **types, size_t *size) {
     }
     *types = temp_types;
     *size = header->subheader->pattern_size;
+    free_tree_header(header);
 }
