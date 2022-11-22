@@ -3,3 +3,5 @@ src/.idea/
 cmake-build-debug/
 main
 *.txt
+build
+build/*
