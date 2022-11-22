@@ -3,9 +3,9 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
-#include "../configuration.h"
+#include "configuration.h"
 #include "time.h"
-#include "../crud_tools/crud.h"
+#include "crud_tools/crud.h"
 
 int32_t read_command_line(char *buffer);
 uint64_t get_hash(char *string);

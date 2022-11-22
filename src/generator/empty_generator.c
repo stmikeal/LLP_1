@@ -1,4 +1,4 @@
-#include "empty_generator.h"
+#include "generator/empty_generator.h"
 
 static void generate_empty_tree_subheader(struct tree_subheader *subheader, size_t pattern_size) {
     subheader->pattern_size = (uint64_t) pattern_size;
@@ -16,7 +16,7 @@ static void copy_string(char *from, char *to, size_t size_from, size_t size_to){
 static void generate_empty_pattern(struct key **key_pattern, char **pattern, uint32_t *types,size_t pattern_size, size_t *key_sizes) {
     struct key *pattern_key;
     size_t real_size;
-    for (size_t iter = pattern_size; iter-- > 0; key_pattern++ && pattern++ && types++ && key_sizes++) {
+    for (size_t iter = pattern_size; iter-- > 0; key_pattern++, pattern++, types++, key_sizes++) {
         pattern_key = malloc(sizeof(struct key));
         real_size = get_real_string_size(*key_sizes);
         char *appended_string = malloc(sizeof(char) * real_size);

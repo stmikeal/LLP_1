@@ -1,6 +1,6 @@
 #ifndef BASIC_CONVERT_H
 #define BASIC_CONVERT_H
-#include "../configuration.h"
+#include "configuration.h"
 #include <inttypes.h>
 #include <stdlib.h>
 

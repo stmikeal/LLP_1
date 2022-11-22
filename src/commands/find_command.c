@@ -1,4 +1,4 @@
-#include "find_command.h"
+#include "commands/find_command.h"
 
 static void print_result_list(FILE *file, struct result_list_tuple *list){
     if (list == NULL) printf("No result\n");
@@ -30,6 +30,7 @@ enum crud_operation_status find_all_res(FILE *file) {
     find_all(file, &list);
     print_result_list(file, list);
     free_result_list(list);
+    return CRUD_OK;
 }
 
 enum crud_operation_status find_single(FILE *file) {
@@ -38,14 +39,14 @@ enum crud_operation_status find_single(FILE *file) {
     uint64_t  id;
     struct tree_header *header = malloc(sizeof(struct tree_header));
     read_tree_header_np(header, file);
-    scanf("%ld", &id);
+    enum crud_operation_status status = !scanf("%ld", &id);
     uint64_t *fields;
     if (header->subheader->cur_id < id){
         printf("Too large id\n");
         free_tree_header(header);
         return CRUD_INVALID;
     }
-    enum crud_operation_status status = get_tuple(file, &fields, id);
+    status = get_tuple(file, &fields, id);
     if (status) {
         printf("No result\n");
         free_tree_header(header);
@@ -64,17 +65,19 @@ enum crud_operation_status find_single(FILE *file) {
     }
     free(fields);
     free_tree_header(header);
+    return CRUD_OK;
 }
 
 enum crud_operation_status find_parent(FILE *file) {
     printf("Enter parent id\n");
     printf("%-20s:", "Id");
     uint64_t  id;
-    scanf("%ld", &id);
+    enum crud_operation_status status = !scanf("%ld", &id);
     struct result_list_tuple *list = NULL;
     find_by_parent(file, id, &list);
     print_result_list(file, list);
     free_result_list(list);
+    return status ? CRUD_INVALID : CRUD_OK;
 }
 
 enum crud_operation_status find_condition(FILE *file) {
@@ -86,23 +89,24 @@ enum crud_operation_status find_condition(FILE *file) {
     }
     uint64_t  number;
     printf("Field: ");
-    scanf("%ld", &number);
+    enum crud_operation_status status = !scanf("%ld", &number);
     if (number > header->subheader->pattern_size - 1) return CRUD_INVALID;
     printf("Enter expression to equaling\n");
     printf("Exp: ");
     uint64_t value;
     char s[BUFFER_FIELD_SIZE];
     switch (header->pattern[number]->header->type) {
-        case INTEGER_TYPE: scanf("%ld", &value);; break;
-        case BOOLEAN_TYPE: scanf("%ld", &value);; break;
-        case FLOAT_TYPE: scanf("%lf", (double *) &value);; break;
-        default: scanf("%s", s); value = (uint64_t) s; break;
+        case INTEGER_TYPE: status |= !scanf("%ld", &value);; break;
+        case BOOLEAN_TYPE: status |= !scanf("%ld", &value);; break;
+        case FLOAT_TYPE: status |= !scanf("%lf", (double *) &value);; break;
+        default: status |= !scanf("%s", s); value = (uint64_t) s; break;
     }
     struct result_list_tuple *list = NULL;
     find_by_field(file, number, &value, &list);
     print_result_list(file, list);
     free_tree_header(header);
     free_result_list(list);
+    return status ? CRUD_INVALID : CRUD_OK;
 }
 
 enum crud_operation_status find_execute(FILE *file){
@@ -113,13 +117,12 @@ enum crud_operation_status find_execute(FILE *file){
     printf("4. Find by condition\n");
     printf("%-20s:", "Type");
     uint64_t option;
-    scanf("%ld", &option);
-    enum crud_operation_status status;
+    enum crud_operation_status status = !scanf("%ld", &option);
     switch (option) {
-        case 1: status = find_all_res(file); break;
-        case 2: status = find_single(file); break;
-        case 3: status = find_parent(file); break;
-        case 4: status = find_condition(file); break;
+        case 1: status |= find_all_res(file); break;
+        case 2: status |= find_single(file); break;
+        case 3: status |= find_parent(file); break;
+        case 4: status |= find_condition(file); break;
         default: printf("Incorrect type"); status =  CRUD_INVALID;
     }
 

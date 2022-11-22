@@ -1,9 +1,9 @@
 #ifndef TREE_HEADER_TOOLS_H
 #define TREE_HEADER_TOOLS_H
 
-#include "../basic_types/tree_header.h"
-#include "../adv_types/tuple_tools.h"
-#include "../basic_types/list.h"
+#include "basic_types/tree_header.h"
+#include "tuple_tools.h"
+#include "basic_types/list.h"
 #include "crud_status.h"
 
 enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offset);

@@ -1,4 +1,4 @@
-#include "tuple_tools.h"
+#include "adv_types/tuple_tools.h"
 
 static size_t how_long_string_is(FILE *file, uint64_t offset){
     fseek(file, offset, SEEK_SET);
@@ -80,9 +80,9 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
         free_tree_header(header);
         free(buffer);
     }
-    ftruncate(fileno(file), pos_from);
+    enum crud_operation_status status = ftruncate(fileno(file), pos_from);
     fseek(file, 0, SEEK_END);
-    return CRUD_OK;
+    return status;
 }
 
 enum crud_operation_status swap_with_last(FILE *file, uint64_t offset, uint64_t size) {
@@ -96,8 +96,9 @@ enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, siz
     fseek(file, 0, SEEK_END);
     *tuple_pos = ftell(file);
     int fd = fileno(file);
-    ftruncate(fd, ftell(file) + full_tuple_size);
-    return (enum crud_operation_status) write_tuple(file, tuple, full_tuple_size - sizeof(union tuple_header));
+    enum crud_operation_status status = ftruncate(fd, ftell(file) + full_tuple_size);
+    status |= write_tuple(file, tuple, full_tuple_size - sizeof(union tuple_header));
+    return  status;
 }
 
 enum crud_operation_status insert_string_tuple(FILE *file, char *string, size_t tuple_size, uint64_t par_pos, uint64_t *str_pos) {

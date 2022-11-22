@@ -1,4 +1,4 @@
-#include "configuration.h"
+#include "../include/configuration.h"
 
 struct file_config *new_file_config() {
     struct file_config *config = malloc(sizeof(struct file_config));

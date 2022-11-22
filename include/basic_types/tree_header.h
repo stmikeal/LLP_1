@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include "../basic_tools/basic_file_manager.h"
-#include "../basic_tools/basic_convert.h"
+#include "basic_tools/basic_file_manager.h"
+#include "basic_tools/basic_convert.h"
 
 /**
  *  Определение типов данных

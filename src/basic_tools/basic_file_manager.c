@@ -1,4 +1,4 @@
-#include "basic_file_manager.h"
+#include "basic_tools/basic_file_manager.h"
 
 enum file_read_status read_from_file(void *buffer, FILE *file, size_t size) {
     size_t length = fread(buffer, size, 1, file);
@@ -37,6 +37,7 @@ enum file_open_status open_exist_file(char *filename, FILE **file){
 
 enum file_open_status open_new_file(char *filename, FILE **file){
     if (!open_file(filename, file, "w+b")) return OPEN_NEW;
+    else return OPEN_FAILED;
 }
 
 void close_file(FILE *file){

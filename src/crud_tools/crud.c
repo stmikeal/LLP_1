@@ -1,4 +1,4 @@
-#include "crud.h"
+#include "crud_tools/crud.h"
 
 enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t parent_id) {
     uint32_t *types;
@@ -51,6 +51,7 @@ enum crud_operation_status get_tuple(FILE *file, uint64_t **fields, uint64_t id)
     }
     free(types);
     free_tuple(cur_tuple);
+    return CRUD_OK;
 }
 
 static enum crud_operation_status remove_recursive_tuple_with_values

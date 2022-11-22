@@ -1,11 +1,11 @@
-#include "console_tools.h"
+#include "ui/console_tools.h"
 
 
 const char *command_hint = ">>> ";
 
 int32_t read_command_line(char *buffer) {
     printf("%s", command_hint);
-    scanf("%s", buffer);
+    return !scanf("%s", buffer);
 }
 
 uint64_t get_hash(char *string) {
@@ -19,7 +19,7 @@ void init_file(FILE *file) {
     printf("So, you need to make file pattern...\n");
     printf("Firstly, enter how many fields in each tuple do you need: ");
     size_t count;
-    scanf("%ld", &count);
+    enum crud_operation_status status = !scanf("%ld", &count);
     printf("Then you need to describe each field:\n");
     char *str;
     char **str_array = malloc(count * sizeof(char *));
@@ -31,7 +31,7 @@ void init_file(FILE *file) {
         printf("--- Field %-3zu ---\n", iter);
         str = malloc(BUFFER_FIELD_SIZE);
         printf("Enter field name: ");
-        scanf("%s", str);
+        status |= !scanf("%s", str);
         str_array[iter] = str;
         temp_size = strlen(str);
         sizes[iter] = temp_size + (!(temp_size % FILE_GRANULARITY) ? 1 : 0);
@@ -40,7 +40,7 @@ void init_file(FILE *file) {
         printf("%d. Float\n", FLOAT_TYPE);
         printf("%d. String\n", STRING_TYPE);
         printf("Choose field type by entering number: ");
-        scanf("%d", &type);
+        status |= !scanf("%d", &type);
         types[iter] = type;
     }
     init_empty_file(file, str_array, types, count, sizes);
@@ -48,6 +48,7 @@ void init_file(FILE *file) {
     free(str_array);
     free(sizes);
     free(types);
+    if (status) printf("Invalid init of file!");
 }
 
 void time_add_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id){
@@ -80,7 +81,6 @@ void time_add_get_cond_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id)
 
 void time_add_remove_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id, uint64_t id){
     add_tuple(file, fields, parent_id);
-    struct result_list_tuple *res;
     clock_t cl = clock();
     remove_tuple(file, id);
     printf("%f\n", (double) (clock() - cl) / CLOCKS_PER_SEC);

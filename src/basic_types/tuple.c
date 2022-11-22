@@ -1,4 +1,4 @@
-#include "tuple.h"
+#include "basic_types/tuple.h"
 
 enum file_read_status read_tuple(struct tuple **tuple, FILE *file, uint64_t pattern_size) {
     *tuple = (struct tuple *) malloc(sizeof(struct tuple));

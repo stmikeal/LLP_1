@@ -1,22 +1,33 @@
 CC=gcc
-CFLAGS=--std=c17 -Wall -pedantic -Isrc/ -ggdb -Wextra -Werror -DDEBUG -g3
+INCLUDES=-I./include
+CFLAGS=-O3 -Wall -Wextra $(INCLUDES)
+DEBUG_CFLAGS=-DDEBUG -g3
 
-BUILDDIR=build
-SRCDIR=src
-TARGETDIR=.
+TARGET=main
+TARGET_TEST=test
 
-SOURCES=$(shell find ./$(SRCDIR) -name "*.c")
-EXECUTABLE=main
+SRC_DIR=src
+HEADER_DIR=include
+TARGET_DIR=build
 
-.PHONY: all
+SOURCES  = $(shell find ./$(SRC_DIR) -name "*.c")
+HEADERS  = $(shell find ./$(HEADER_DIR) -name "*.h")
+
+debug: CFLAGS += $(DEBUG_CFLAGS)
+debug: $(TARGET)
+
 all: build run
+
 run:
-	./$(EXECUTABLE)
+	./$(TARGET)
 
-build: $(SOURCES) $(EXECUTABLE)
+build: $(SOURCES) $(TARGET)
 
-$(EXECUTABLE): $(SOURCES)
-	$(CC) $(SOURCES) -o $@
+$(TARGET): $(SOURCES) $(HEADERS)
+	mkdir -p $(TARGET_DIR)
+	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET_DIR)/$@
 
 clean:
-	rm -rf $(BUILDDIR) $(EXECUTABLE)
+	rm -rf $(BUILDDIR) $(TARGET_DIR)
+
+

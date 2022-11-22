@@ -1,4 +1,4 @@
-#include "tree_header.h"
+#include "basic_types/tree_header.h"
 
 static enum file_read_status read_tree_subheader(struct tree_subheader *header, FILE *file) {
     enum file_read_status code = read_from_file(header, file, sizeof(struct tree_subheader));

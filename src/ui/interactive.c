@@ -1,4 +1,4 @@
-#include "interactive.h"
+#include "ui/interactive.h"
 void print_help();
 
 uint8_t loop = NULL_VALUE;
@@ -67,9 +67,6 @@ int32_t interactive_mode(struct file_config *config) {
         uint64_t parent;
         uint64_t code;
         uint64_t fields[2];
-        uint64_t id = 0;
-        uint64_t limit = 1;
-        uint64_t counter = 0;
         while(!feof(gen_file)){
             if(fscanf(gen_file, "%ld code=%ld name=%s\n", &parent, &code, s)){
                 fields[0] = (uint64_t) s;
@@ -96,6 +93,8 @@ int32_t interactive_mode(struct file_config *config) {
 
 
     close_file(file);
+
+    return CRUD_OK;
 }
 
 void print_help() {
