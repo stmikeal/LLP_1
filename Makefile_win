@@ -5,7 +5,7 @@ BUILDDIR=build
 SRCDIR=src
 TARGETDIR=.
 
-SOURCES=C:\Data\LLP_1\src\configuration.c C:\Data\LLP_1\src\main.c C:\Data\LLP_1\src\adv_tools\file_manager.c C:\Data\LLP_1\src\adv_types\tree_header_tools.c C:\Data\LLP_1\src\adv_types\tuple_tools.c C:\Data\LLP_1\src\basic_tools\basic_convert.c C:\Data\LLP_1\src\basic_tools\basic_file_manager.c C:\Data\LLP_1\src\basic_types\list.c C:\Data\LLP_1\src\basic_types\tree_header.c C:\Data\LLP_1\src\basic_types\tuple.c C:\Data\LLP_1\src\commands\add_command.c C:\Data\LLP_1\src\commands\find_command.c C:\Data\LLP_1\src\commands\remove_command.c C:\Data\LLP_1\src\commands\update_command.c C:\Data\LLP_1\src\crud_tools\crud.c C:\Data\LLP_1\src\generator\empty_generator.c C:\Data\LLP_1\src\ui\console_tools.c C:\Data\LLP_1\src\ui\interactive.c
+SOURCES=$(wildcard src/*.c) $(wildcard src/*/*.c) $(wildcard src/*/*/*.c) $(wildcard src/*/*/*/*.c)
 EXECUTABLE=main
 
 .PHONY: build
@@ -15,4 +15,4 @@ build: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	$(CC) $(SOURCES) -o $@
 clean:
-	rm -rf $(BUILDDIR) $(EXECUTABLE)
+	del -rf $(BUILDDIR) $(EXECUTABLE)
