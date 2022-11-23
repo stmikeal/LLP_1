@@ -4,22 +4,26 @@ CFLAGS:=-O3 -Wall -Wextra $(INCLUDES)
 DEBUG_CFLAGS:=-DDEBUG -g3
 
 TARGET=main
-TARGET_TEST=test
+TEST=test
 
 SRC_DIR=src
 HEADER_DIR=include
 TARGET_DIR=build
+TEST_DIR=test
+REPORT_DIR=report
 
-SOURCES  = $(shell find ./$(SRC_DIR) -name "*.c")
-HEADERS  = $(shell find ./$(HEADER_DIR) -name "*.h")
+SOURCES  = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c)
+HEADERS  = $(wildcard $(HEADER_DIR)/*.h) $(wildcard $(HEADER_DIR)/*/*.h)
+TEST_SRC = $(wildcard $(TEST_DIR)/*.c)
 
 debug: CFLAGS += $(DEBUG_CFLAGS)
 debug: $(TARGET)
 
-all: build run
+test: $(TEST)
 
-run:
-	./$(TARGET)
+$(TEST): $(patsubst $(TARGET_DIR)/main.c,,$(SOURCES)) $(HEADERS) $(TEST_SRC)
+	mkdir -p $(TARGET_DIR)/$(TEST_DIR)/$(REPORT_DIR)
+	$(CC) $(CFLAGS) $(patsubst $(SRC_DIR)/main.c,,$(SOURCES)) $(TEST_SRC) -o $(TARGET_DIR)/$(TEST_DIR)/$@
 
 build: $(SOURCES) $(TARGET)
 
@@ -29,5 +33,7 @@ $(TARGET): $(SOURCES) $(HEADERS)
 
 clean:
 	rm -rf $(TARGET_DIR)
+
+.PHONY: debug test build clean
 
 

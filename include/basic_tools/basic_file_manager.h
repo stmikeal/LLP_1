@@ -43,7 +43,7 @@ enum file_open_status open_new_file(char *filename, FILE **file);
 
 enum file_open_status open_empty_file(char *filename, FILE **file);
 void close_file(FILE *file);
-
+enum file_open_status open_file_write(char *filename, FILE **file);
 /**
  * Статус чтения файла
  */

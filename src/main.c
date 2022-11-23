@@ -1,5 +1,4 @@
 #include "ui/interactive.h"
-#include "test.h"
 
 int main(int argc, char** argv) {
     struct file_config *config = new_file_config();
@@ -8,9 +7,6 @@ int main(int argc, char** argv) {
         config->generator_filename = argv[argc-2];
         config->generator_flag = !NULL_VALUE;
     } else if (argc == 2){
-        if (argv[1][0]=='-' && argv[1][1]=='t' && argv[1][2]==0){
-            return run_all_test();
-        }
         config->filename = argv[argc-1];
     } else {
         printf("Неправильные аргументы программы.\n");

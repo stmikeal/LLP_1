@@ -40,6 +40,11 @@ enum file_open_status open_new_file(char *filename, FILE **file){
     else return OPEN_FAILED;
 }
 
+enum file_open_status open_file_write(char *filename, FILE **file){
+    if (!open_file(filename, file, "w")) return OPEN_NEW;
+    else return OPEN_FAILED;
+}
+
 void close_file(FILE *file){
     fclose(file);
 }

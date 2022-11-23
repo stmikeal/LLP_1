@@ -67,11 +67,12 @@ int32_t interactive_mode(struct file_config *config) {
         uint64_t parent;
         uint64_t code;
         uint64_t fields[2];
+        uint64_t id =0;
         while(!feof(gen_file)){
             if(fscanf(gen_file, "%ld code=%ld name=%s\n", &parent, &code, s)){
                 fields[0] = (uint64_t) s;
                 fields[1] = code;
-                add_tuple(file, fields, parent);
+                time_add_wrapper(file, fields, parent);
             }
         }
         close_file(gen_file);
