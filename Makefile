@@ -1,6 +1,6 @@
 CC=gcc
 INCLUDES=-I./include
-CFLAGS:=-O3 -Wall -Wextra $(INCLUDES)
+CFLAGS:=-O0 -Wall -Wextra $(INCLUDES)
 DEBUG_CFLAGS:=-DDEBUG -g3
 
 TARGET=main

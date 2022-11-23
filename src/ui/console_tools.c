@@ -70,6 +70,15 @@ void time_add_get_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id, uint
     printf("%f\n", (double) (clock() - cl) / CLOCKS_PER_SEC);
 }
 
+void time_add_get_by_parent_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id){
+    add_tuple(file, fields, parent_id);
+    struct result_list_tuple *list = NULL;
+    clock_t cl = clock();
+    find_by_parent(file, parent_id, &list);
+    printf("%f\n", (double) (clock() - cl) / CLOCKS_PER_SEC);
+    free_result_list(list);
+}
+
 void time_add_get_cond_wrapper(FILE *file, uint64_t *fields, uint64_t parent_id){
     add_tuple(file, fields, parent_id);
     uint64_t c = 3342;

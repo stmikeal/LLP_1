@@ -44,5 +44,9 @@ enum file_read_status read_tree_header(struct tree_header *header, FILE *file, s
 enum file_read_status read_tree_header_np(struct tree_header *header, FILE *file);
 void free_tree_header(struct tree_header *header);
 enum file_write_status write_tree_header(FILE *file, struct tree_header *header);
+enum file_read_status read_tree_header_no_id(struct tree_header *header, FILE *file, size_t *fpos);
+enum file_write_status write_id_value(FILE *file, size_t fpos, uint64_t offset, size_t index);
+enum file_write_status write_tree_header_no_id(FILE *file, struct tree_header *header);
+void free_tree_header_no_id(struct tree_header *header);
 
 #endif

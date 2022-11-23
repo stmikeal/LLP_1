@@ -15,13 +15,21 @@ enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offse
     return CRUD_INVALID;
 }
 
+int valid_offset_id(FILE *file, size_t fpos, uint64_t id, uint64_t offset) {
+    fseek(file, fpos + id * sizeof(uint64_t), SEEK_SET);
+    uint64_t offset_file;
+    read_from_file(&offset_file, file, sizeof(uint64_t));
+    return offset_file == offset;
+}
+
 enum crud_operation_status id_to_offset(FILE *file, uint64_t id, uint64_t* offset) {
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t pos;
-    read_tree_header(header, file, &pos);
-    *offset = header->id_sequence[id];
-    free_tree_header(header);
+    read_tree_header_no_id(header, file, &pos);
+    fseek(file, pos + id * sizeof(uint64_t), SEEK_SET);
+    read_from_file(offset, file, sizeof(uint64_t));
+    free_tree_header_no_id(header);
     return CRUD_OK;
 }
 
@@ -42,42 +50,38 @@ struct uint64_list *get_childs_by_id(FILE *file, uint64_t id) {
 
 uint64_t remove_from_id_array(FILE *file, uint64_t id) {
     uint64_t offset;
+    uint64_t null_val = 0;
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t pos;
-    read_tree_header(header, file, &pos);
-    if (header->id_sequence[id] == NULL_VALUE) {
-        free_tree_header(header);
-        return NULL_VALUE;
-    } else {
-        offset = header->id_sequence[id];
-        if (header->subheader->cur_id-1 == id) {
-            header->subheader->cur_id--;
-        }
-        header->id_sequence[id] = 0;
-        write_tree_header(file, header);
-        free_tree_header(header);
-        return offset;
+    read_tree_header_no_id(header, file, &pos);
+    if (header->subheader->cur_id-1 == id) {
+        header->subheader->cur_id--;
     }
+    write_tree_header_no_id(file, header);    fseek(file, pos + id * sizeof(uint64_t), SEEK_SET);
+    read_from_file(&offset, file, sizeof(uint64_t));
+    fseek(file, pos + id * sizeof(uint64_t), SEEK_SET);
+    write_to_file(&null_val, file, sizeof(uint64_t));
+    free_tree_header_no_id(header);
+    return offset;
 }
 
 enum crud_operation_status append_to_id_array(FILE *file, uint64_t offset) {
     enum crud_operation_status status = CRUD_OK;
-    fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
-    read_tree_header_np(header, file);
-    if (!((header->subheader->cur_id + 1) % get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id))){
-        uint64_t from = ftell(file);
+    size_t array_pos;
+    read_tree_header_no_id(header, file, &array_pos);
+    uint64_t real_tuple_size = get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id);
+    if (!((header->subheader->cur_id + 1) % real_tuple_size)){
+        uint64_t from = ftell(file) + real_tuple_size * sizeof(uint64_t);
         fseek(file, 0, SEEK_END);
         uint64_t cur_end = ftell(file);
         status |= ftruncate(fileno(file), cur_end + get_real_tuple_size(header->subheader->pattern_size) + sizeof(union tuple_header));
-        swap_tuple_to(file, from, cur_end, get_real_tuple_size(header->subheader->pattern_size));
-        read_tree_header_np(header, file);
+        swap_tuple_to(file, from, cur_end, get_real_tuple_size(header->subheader->pattern_size) + sizeof(union tuple_header));
     }
-    header->id_sequence[header->subheader->cur_id] = offset;
-    header->subheader->cur_id++;
-    write_tree_header(file, header);
-    free_tree_header(header);
+    write_id_value(file, array_pos, offset, header->subheader->cur_id++);
+    write_tree_header_no_id(file, header);
+    free_tree_header_no_id(header);
     return status;
 }
 
@@ -85,12 +89,12 @@ void get_types(FILE *file, uint32_t **types, size_t *size) {
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t pos;
-    read_tree_header(header, file, &pos);
+    read_tree_header_no_id(header, file, &pos);
     uint32_t *temp_types = malloc(header->subheader->pattern_size * sizeof(uint32_t));
     for (size_t iter = 0; iter < header->subheader->pattern_size; iter++) {
         temp_types[iter] = header->pattern[iter]->header->type;
     }
     *types = temp_types;
     *size = header->subheader->pattern_size;
-    free_tree_header(header);
+    free_tree_header_no_id(header);
 }

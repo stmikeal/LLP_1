@@ -72,7 +72,7 @@ int32_t interactive_mode(struct file_config *config) {
             if(fscanf(gen_file, "%ld code=%ld name=%s\n", &parent, &code, s)){
                 fields[0] = (uint64_t) s;
                 fields[1] = code;
-                time_add_wrapper(file, fields, parent);
+                add_tuple(file, fields, parent);
             }
         }
         close_file(gen_file);

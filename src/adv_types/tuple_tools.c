@@ -39,19 +39,19 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
         write_to_file(buffer, file, tuple_size);
 
         struct tree_header *header = malloc(sizeof(struct tree_header));
-        read_tree_header_np(header, file);
+        size_t fpos;
+        read_tree_header_no_id(header, file, &fpos);
 
         uint64_t id;
         fseek(file, pos_to, SEEK_SET);
-        if (!offset_to_id(file, &id, pos_from)) {
+        if (valid_offset_id(file, fpos, buffer[1], pos_from)) {
             for (size_t iter = 0; iter < header->subheader->pattern_size; iter++){
                 if (header->pattern[iter]->header->type == STRING_TYPE) {
                     fseek(file, buffer[iter + (sizeof(union tuple_header)/SINGLE_TUPLE_VALUE_SIZE)], SEEK_SET);
                     write_to_file(&pos_to, file, sizeof(uint64_t));
                 }
             }
-            header->id_sequence[id] = pos_to;
-            write_tree_header(file, header);
+            write_id_value(file, fpos, pos_to, buffer[1]);
         } else {
             uint64_t offset = buffer[0];
 
@@ -78,7 +78,7 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
             }
             free(temp_header);
         }
-        free_tree_header(header);
+        free_tree_header_no_id(header);
         free(buffer);
     }
     fseek(file, 0, SEEK_END);

@@ -1,14 +1,18 @@
 #include "crud_tools/crud.h"
+#include <time.h>
 
 enum crud_operation_status add_tuple(FILE *file, uint64_t *fields, uint64_t parent_id) {
     uint32_t *types;
     size_t size;
     get_types(file, &types, &size);
+    struct tree_header *header = malloc(sizeof(struct tree_header));
+    size_t fpos = 0;
+    read_tree_header_no_id(header, file, &fpos);
     size_t full_tuple_size = sizeof(union tuple_header) + get_real_tuple_size(size);
     struct tuple *new_tuple = malloc(sizeof(struct tuple));
-    union tuple_header new_tuple_header = {.parent = parent_id, .alloc = (uint64_t) new_tuple};
-    new_tuple->header = new_tuple_header;
-    new_tuple->data = malloc(size);
+    new_tuple->header.parent = parent_id;
+    new_tuple->header.alloc = header->subheader->cur_id;
+    new_tuple->data = malloc(get_real_tuple_size(size));
     uint64_t *link = malloc(sizeof(uint64_t));
     uint64_t par_pos;
     enum crud_operation_status status = insert_new_tuple(file, new_tuple, full_tuple_size, &par_pos);
@@ -125,19 +129,22 @@ enum crud_operation_status find_by_field(FILE *file, uint64_t field_number, uint
 enum crud_operation_status find_by_parent(FILE *file, uint64_t parent_id, struct result_list_tuple **result){
     struct tree_header *header = malloc(sizeof(struct tree_header));
     size_t pos;
-    read_tree_header(header, file, &pos);
+    read_tree_header_no_id(header, file, &pos);
     struct tuple* cur_tuple;
+    uint64_t offset;
     for(size_t i = 0; i < header->subheader->cur_id; i++){
-        if (header->id_sequence[i] == NULL_VALUE) continue;
-        fseek(file, header->id_sequence[i], SEEK_SET);
+        read_from_file(&offset, file, sizeof(uint64_t));
+        if (offset == NULL_VALUE) continue;
+        fseek(file, offset, SEEK_SET);
         read_tuple(&cur_tuple, file, header->subheader->pattern_size);
         if (cur_tuple->header.parent == parent_id) {
             append_to_result_list(&cur_tuple, result);
+        } else {
+            free_tuple(cur_tuple);
         }
 
     }
-    free_tree_header(header);
-    free_tuple(cur_tuple);
+    free_tree_header_no_id(header);
     return 0;
 }
 
@@ -163,9 +170,6 @@ enum crud_operation_status update_tuple(FILE *file, uint64_t field_number, uint6
     size_t size;
     get_types(file, &types, &size);
     uint64_t type = types[field_number];
-    struct tree_header *header = malloc(sizeof(struct tree_header));
-    size_t pos;
-    read_tree_header(header, file, &pos);
     uint64_t  offset;
     id_to_offset(file, id, &offset);
     struct tuple* cur_tuple;
@@ -178,7 +182,6 @@ enum crud_operation_status update_tuple(FILE *file, uint64_t field_number, uint6
         fseek(file, offset, SEEK_SET);
         write_tuple(file, cur_tuple, get_real_tuple_size(size));
     }
-    free_tree_header(header);
     free_tuple(cur_tuple);
     free(types);
     return 0;
