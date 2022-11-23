@@ -2,12 +2,14 @@ import random
 import string
 import sys
 
-
+col = 0
 def generate_random_string():
     length = random.randrange(5, 20)
     letters = string.ascii_lowercase
     rand_string = ''.join(random.choice(letters) for i in range(length))
-    return rand_string
+    global col
+    col += 1
+    return str(col) + "name"
 
 
 def generate_random_int():

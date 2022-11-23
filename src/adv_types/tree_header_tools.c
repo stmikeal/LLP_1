@@ -3,12 +3,11 @@
 enum crud_operation_status offset_to_id(FILE *file, uint64_t* id, uint64_t offset) {
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
-    size_t pos;
-    read_tree_header(header, file, &pos);
+    read_tree_header_np(header, file);
     for (size_t iter = 0; iter < header->subheader->cur_id; iter++){
         if (header->id_sequence[iter] == offset){
             *id = iter;
-            free(header);
+            free_tree_header(header);
             return CRUD_OK;
         }
     }
@@ -63,20 +62,23 @@ uint64_t remove_from_id_array(FILE *file, uint64_t id) {
 }
 
 enum crud_operation_status append_to_id_array(FILE *file, uint64_t offset) {
+    enum crud_operation_status status = CRUD_OK;
     fseek(file, 0, SEEK_SET);
     struct tree_header *header = malloc(sizeof(struct tree_header));
-    size_t pos;
-    read_tree_header(header, file, &pos);
+    read_tree_header_np(header, file);
     if (!((header->subheader->cur_id + 1) % get_real_id_array_size(header->subheader->pattern_size, header->subheader->cur_id))){
         uint64_t from = ftell(file);
         fseek(file, 0, SEEK_END);
-        swap_tuple_to(file, from, ftell(file), get_real_tuple_size(header->subheader->pattern_size));
+        uint64_t cur_end = ftell(file);
+        status |= ftruncate(fileno(file), cur_end + get_real_tuple_size(header->subheader->pattern_size) + sizeof(union tuple_header));
+        swap_tuple_to(file, from, cur_end, get_real_tuple_size(header->subheader->pattern_size));
+        read_tree_header_np(header, file);
     }
     header->id_sequence[header->subheader->cur_id] = offset;
     header->subheader->cur_id++;
     write_tree_header(file, header);
     free_tree_header(header);
-    return 0;
+    return status;
 }
 
 void get_types(FILE *file, uint32_t **types, size_t *size) {

@@ -1,7 +1,7 @@
 CC=gcc
 INCLUDES=-I./include
-CFLAGS=-O3 -Wall -Wextra $(INCLUDES)
-DEBUG_CFLAGS=-DDEBUG -g3
+CFLAGS:=-O3 -Wall -Wextra $(INCLUDES)
+DEBUG_CFLAGS:=-DDEBUG -g3
 
 TARGET=main
 TARGET_TEST=test
@@ -28,6 +28,6 @@ $(TARGET): $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET_DIR)/$@
 
 clean:
-	rm -rf $(BUILDDIR) $(TARGET_DIR)
+	rm -rf $(TARGET_DIR)
 
 

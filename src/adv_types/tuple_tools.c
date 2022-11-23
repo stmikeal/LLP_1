@@ -38,24 +38,27 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
         fseek(file, pos_to, SEEK_SET);
         write_to_file(buffer, file, tuple_size);
 
-
-        fseek(file, 0, SEEK_SET);
         struct tree_header *header = malloc(sizeof(struct tree_header));
-        size_t pos;
-        read_tree_header(header, file, &pos);
+        read_tree_header_np(header, file);
+
         uint64_t id;
+        fseek(file, pos_to, SEEK_SET);
         if (!offset_to_id(file, &id, pos_from)) {
-            fseek(file, pos_to, SEEK_SET);
-            read_from_file(buffer, file, tuple_size);
+            for (size_t iter = 0; iter < header->subheader->pattern_size; iter++){
+                if (header->pattern[iter]->header->type == STRING_TYPE) {
+                    fseek(file, buffer[iter + (sizeof(union tuple_header)/SINGLE_TUPLE_VALUE_SIZE)], SEEK_SET);
+                    write_to_file(&pos_to, file, sizeof(uint64_t));
+                }
+            }
             header->id_sequence[id] = pos_to;
             write_tree_header(file, header);
         } else {
-            fseek(file, pos_from, SEEK_SET);
-            union tuple_header * temp_header = malloc(sizeof(union tuple_header));
-            read_from_file(temp_header, file, sizeof(union tuple_header));
-            uint64_t offset = temp_header->prev;
+            uint64_t offset = buffer[0];
+
+            union tuple_header *temp_header = malloc(sizeof(union tuple_header));
             fseek(file, offset, SEEK_SET);
             read_from_file(temp_header, file, sizeof(union tuple_header));
+
             if (temp_header->next == pos_from) {
                 fseek(file, offset, SEEK_SET);
                 temp_header->next = pos_to;
@@ -68,8 +71,6 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
                         data[iter] = pos_to;
                         fseek(file, offset + sizeof(union tuple_header), SEEK_SET);
                         write_to_file(data, file, tuple_size - sizeof(union tuple_header));
-                        fseek(file, offset + sizeof(union tuple_header), SEEK_SET);
-                        read_from_file(data, file, tuple_size - sizeof(union tuple_header));
                         break;
                     }
                 }
@@ -80,16 +81,18 @@ enum crud_operation_status swap_tuple_to(FILE *file, uint64_t pos_from, uint64_t
         free_tree_header(header);
         free(buffer);
     }
-    enum crud_operation_status status = ftruncate(fileno(file), pos_from);
     fseek(file, 0, SEEK_END);
-    return status;
+    return CRUD_OK;
 }
 
 enum crud_operation_status swap_with_last(FILE *file, uint64_t offset, uint64_t size) {
     uint64_t full_size = size + sizeof(union tuple_header);
     fseek(file, 0, SEEK_END);
     fseek(file, -(int64_t) full_size, SEEK_END);
-    return swap_tuple_to(file, ftell(file), offset, full_size);
+    enum crud_operation_status status = swap_tuple_to(file, ftell(file), offset, full_size);
+    fseek(file, -(int64_t) full_size, SEEK_END);
+    status |= ftruncate(fileno(file), ftell(file));
+    return status;
 }
 
 enum crud_operation_status insert_new_tuple(FILE *file, struct tuple *tuple, size_t full_tuple_size, uint64_t *tuple_pos) {

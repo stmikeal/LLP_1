@@ -8,7 +8,7 @@
 /* size of offset in tuple [bytes] */
 #define OFFSET_VALUE_SIZE 8
 /* minimal id array size [tuple sizes] */
-#define MIN_ID_ARRAY_SIZE 50000
+#define MIN_ID_ARRAY_SIZE 1
 #define MINIMAL_TUPLE_SIZE 256
 /* size of string to read command */
 #define BUFFER_COMMAND_SIZE 256
