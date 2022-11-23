@@ -5,9 +5,6 @@ struct map_data {
     size_t size;
 };
 
-size_t cur_size = 0;
-
-
 struct map_data map[10000] = {0};
 size_t glob_size = 0;
 size_t iter = 0;
@@ -29,10 +26,6 @@ size_t get_real_id_array_size(uint64_t pattern_size, uint64_t cur_id){
     size_t whole = (cur_id * OFFSET_VALUE_SIZE / real_tuple_size);
     size_t frac = (cur_id * OFFSET_VALUE_SIZE % real_tuple_size ? 1: 0);
     size_t value = max( (frac + whole) * real_tuple_size / OFFSET_VALUE_SIZE, MIN_ID_ARRAY_SIZE * real_tuple_size / OFFSET_VALUE_SIZE);
-    if (cur_size != value) {
-        cur_size = value;
-        printf("NEW ID ARRAY SIZE: %zu\n", value);
-    }
     return value;
 }
 
